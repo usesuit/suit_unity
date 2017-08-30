@@ -33,7 +33,7 @@ public class SuperMetaNode : SuperContainer
 	public Dictionary<string, SuperSprite> sprites = new Dictionary<string, SuperSprite>();
 	public Dictionary<string, Rect> placeholders = new Dictionary<string, Rect>();
 	// public Dictionary<string,DAButtonBase> buttons = new Dictionary<string, DAButtonBase>();
-	public Dictionary<string,SuperLabel> labels = new Dictionary<string, FLabel>();
+	public Dictionary<string,SuperLabel> labels = new Dictionary<string, SuperLabel>();
 	// public Dictionary<string,DAProgressBar> progressBars = new Dictionary<string, DAProgressBar>();
 	// public Dictionary<string,DATab> tabs = new Dictionary<string, DATab>();
 
@@ -370,7 +370,7 @@ public class SuperMetaNode : SuperContainer
 
 		GameObject game_object = new GameObject();
 		RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
-		SuperNode super_label = game_object.AddComponent(typeof(SuperLabel)) as SuperLabel;
+		SuperLabel super_label = game_object.AddComponent(typeof(SuperLabel)) as SuperLabel;
 		Text label = game_object.AddComponent(typeof(Text)) as Text;
 
 		string name = (string)node["name"];
@@ -434,7 +434,7 @@ public class SuperMetaNode : SuperContainer
 		super_label.rootNode = this;
 
 		labels[name] = super_label;
-		
+
 		return super_label;
 	}
 
