@@ -92,13 +92,16 @@ public class SuperMetaNodeEditor : Editor
             if(GUILayout.Button("Construct Node"))
             {
                 Debug.Log("MAKE IT FROM " + node.metadata);
+                SuperFontManager.RefreshFonts();
                 node.ProcessMetadata();
                 PostProcessMetadata();
             }
 
             if(GUILayout.Button("Update Node"))
             {
-                Debug.Log("UPDATE IT");
+				node.RemoveAllChildren();
+				//node.ProcessMetadata();
+				//PostProcessMetadata();
             }
 
             EditorGUILayout.EndHorizontal();

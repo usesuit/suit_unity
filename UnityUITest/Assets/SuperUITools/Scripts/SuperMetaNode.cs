@@ -21,7 +21,8 @@ public class SuperMetaNode : SuperContainer
 	[HideInInspector]
 	public String imagePath;
 	
-	public bool autoUpdate = true;  //uncheck in editor if you don't want it to lay itself out automatically on metadata update
+	//uncheck in editor if you don't want it to lay itself out automatically on metadata update
+	public bool autoUpdate = true;
 
 	public float rootWidth;
 	public float rootHeight;
@@ -32,7 +33,7 @@ public class SuperMetaNode : SuperContainer
 	public Dictionary<string, SuperSprite> sprites = new Dictionary<string, SuperSprite>();
 	public Dictionary<string, Rect> placeholders = new Dictionary<string, Rect>();
 	// public Dictionary<string,DAButtonBase> buttons = new Dictionary<string, DAButtonBase>();
-	// public Dictionary<string,FLabel> labels = new Dictionary<string, FLabel>();
+	public Dictionary<string,SuperLabel> labels = new Dictionary<string, FLabel>();
 	// public Dictionary<string,DAProgressBar> progressBars = new Dictionary<string, DAProgressBar>();
 	// public Dictionary<string,DATab> tabs = new Dictionary<string, DATab>();
 
@@ -57,6 +58,21 @@ public class SuperMetaNode : SuperContainer
 	public void OnValidate()
 	{
 		// Debug.Log("INSTANCE VALIDATE");
+	}
+
+	public void RemoveAllChildren()
+	{
+		Transform transform = GetComponent<Transform>();
+		Transform[] transforms = GetComponentsInChildren<Transform>();
+		List<GameObject> kill_list = new List<GameObject>();
+		foreach(Transform child in transform)
+		{
+			kill_list.Add(child.gameObject);
+		}
+		foreach(GameObject go in kill_list)
+		{
+			DestroyImmediate(go);
+		}
 	}
 
 	public void ProcessMetadata()
@@ -346,16 +362,80 @@ public class SuperMetaNode : SuperContainer
 		return container;
 	}
 
+	//if we match bounds exactly the text doesn't render
+	public const float TEXT_VERTICAL_PADDING = 2f;
 	SuperNode ProcessTextNode(Dictionary<string,object> node)
 	{
+		Debug.Log(Json.Serialize(node));
+
 		GameObject game_object = new GameObject();
 		RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
-		SuperNode container = game_object.AddComponent(typeof(SuperNode)) as SuperNode;
+		SuperNode super_label = game_object.AddComponent(typeof(SuperLabel)) as SuperLabel;
+		Text label = game_object.AddComponent(typeof(Text)) as Text;
 
-		container.cachedMetadata = node;
-		container.rootNode = this;
+		string name = (string)node["name"];
+		game_object.name = name;
 
-		return container;
+		List<object> position = node["position"] as List<object>;
+		float x = Convert.ToSingle(position[0]);
+		float y = Convert.ToSingle(position[1]);
+
+		List<object> size = node["size"] as List<object>;
+		float w = Convert.ToSingle(size[0]);
+		float h = Convert.ToSingle(size[1]);
+
+		rect_transform.position = new Vector2(x, y);
+		rect_transform.sizeDelta = new Vector2(w, h * TEXT_VERTICAL_PADDING);
+
+		super_label.resetX = x;
+		super_label.resetY = y;
+
+		label.horizontalOverflow = HorizontalWrapMode.Overflow;
+
+		string font = (string)node["font"];
+		if(SuperFontManager.GetFont(font) != null)
+		{
+			label.font = SuperFontManager.GetFont(font);
+		}else{
+			Debug.Log("[WARNING] SuperFontManager not able to find " + font + " -- falling back to Arial");
+		}
+
+		string text = (string)node["text"];
+		label.text = text;
+
+		int font_size = Convert.ToInt32(node["fontSize"]);
+		label.fontSize = font_size;
+
+		string font_color_hex = (string)node["color"];
+		label.color = HexToColor(font_color_hex);
+
+		if(node.ContainsKey("justification"))
+		{
+			string alignment = (string)node["justification"];
+			if(alignment == "center")
+			{
+				label.alignment = TextAnchor.MiddleCenter;
+			}else if(alignment == "left"){
+				label.alignment = TextAnchor.MiddleLeft;
+				rect_transform.pivot = new Vector2(0f , 0.5f);
+				
+				//no reset adjustment needed. setting us to our old position will move us left w/2
+			}else if(alignment == "right"){
+				label.alignment = TextAnchor.MiddleRight;
+				rect_transform.pivot = new Vector2(1f , 0.5f);
+				
+				//moving the pivot effectively translates us w/2, so we need to move a full with
+				super_label.resetX = x + 2;
+			}
+
+		}
+
+		super_label.cachedMetadata = node;
+		super_label.rootNode = this;
+
+		labels[name] = super_label;
+		
+		return super_label;
 	}
 
 	SuperNode ProcessImageNode(Dictionary<string,object> node)
@@ -456,4 +536,21 @@ public class SuperMetaNode : SuperContainer
 	{
 
 	}
+
+
+
+	public static string ColorToHex(Color color)
+	{
+		string hex = color.r.ToString("X2") + color.g.ToString("X2") + color.b.ToString("X2");
+		return hex;
+	}
+
+	public static Color HexToColor(string hex)
+	{
+		byte r = byte.Parse(hex.Substring(0,2), System.Globalization.NumberStyles.HexNumber);
+		byte g = byte.Parse(hex.Substring(2,2), System.Globalization.NumberStyles.HexNumber);
+		byte b = byte.Parse(hex.Substring(4,2), System.Globalization.NumberStyles.HexNumber);
+		return new Color32(r,g,b, 255);
+	}
+
 }
