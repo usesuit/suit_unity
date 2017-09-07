@@ -110,9 +110,7 @@ public class SuperMetaNode : SuperContainer
                     {
                         got_one = true;
 
-                        //TODO: PROCESS AND ADD CHILD
                         SuperNode node_child = ProcessContainerNode(raw_node);
-
                         SuperContainer container = node_child as SuperContainer;
 
                         //clear out the reset!
@@ -121,10 +119,8 @@ public class SuperMetaNode : SuperContainer
 
 
                         //TODO: FIX THE PIVOTS
-
                         // float offset_x = 0f;
                         // float offset_y = 0f;
-
                         // offset_x = container.pivotX;
                         // offset_y = container.pivotY;
 
@@ -170,7 +166,25 @@ public class SuperMetaNode : SuperContainer
 			switch(node_type)
 			{
 				case "container":
-					child_nodes.Add(ProcessContainerNode(node));
+					SuperNode container = ProcessContainerNode(node);
+					if(container is SuperContainer)
+					{
+						SuperContainer super_container = container as SuperContainer;
+						if(super_container.flattenMe)
+						{
+							foreach(Transform child in super_container.transform)
+							{
+								SuperNode child_node = child.GetComponent<SuperNode>();
+								child_node.resetX += container.resetX;
+								child_node.resetY += container.resetY;
+								child_nodes.Add(child_node);
+							}
+						}else{
+							child_nodes.Add(container);
+						}
+					}else{
+						child_nodes.Add(container);
+					}
 					break;
 				case "text":
 					child_nodes.Add(ProcessTextNode(node));
@@ -277,14 +291,11 @@ public class SuperMetaNode : SuperContainer
 				break;
 
 			default:
-				Debug.Log("[ERROR] Unrecognized Container Type: " + container_type);
-				
+				//if not a whitelisted container, this was an organizational container
+				//just flatten the content into our parent as if this node wasn't there
 				DestroyImmediate(container);
 				SuperContainer rescue_container = game_object.AddComponent(typeof(SuperContainer)) as SuperContainer;
-
-				container_name = name.Replace("container_", "");
-				containers[container_name] = rescue_container;
-				rescue_container.name = container_name;
+				rescue_container.flattenMe = true;
 				container = rescue_container;
 				break;
 		}

@@ -14,5 +14,6 @@ public class SuperContainerBase : SuperNode
 
 public class SuperContainer : SuperContainerBase 
 {
-    
+    [HideInInspector]
+    public bool flattenMe = false;
 }
