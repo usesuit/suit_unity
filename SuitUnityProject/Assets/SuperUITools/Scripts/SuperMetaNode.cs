@@ -63,7 +63,6 @@ public class SuperMetaNode : SuperContainer
 	public void RemoveAllChildren()
 	{
 		Transform transform = GetComponent<Transform>();
-		Transform[] transforms = GetComponentsInChildren<Transform>();
 		List<GameObject> kill_list = new List<GameObject>();
 		foreach(Transform child in transform)
 		{
@@ -153,6 +152,7 @@ public class SuperMetaNode : SuperContainer
                 }
             }
         }
+		
 	}
 
 	List<SuperNode> ProcessChildren(List<object> children)
@@ -377,8 +377,6 @@ public class SuperMetaNode : SuperContainer
 	public const float TEXT_VERTICAL_PADDING = 2f;
 	SuperNode ProcessTextNode(Dictionary<string,object> node)
 	{
-		Debug.Log(Json.Serialize(node));
-
 		GameObject game_object = new GameObject();
 		RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
 		SuperLabel super_label = game_object.AddComponent(typeof(SuperLabel)) as SuperLabel;
@@ -454,7 +452,7 @@ public class SuperMetaNode : SuperContainer
 		GameObject game_object = new GameObject();
 		RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
 		SuperSprite sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
-		Image image = game_object.AddComponent(typeof(Image)) as Image;
+		game_object.AddComponent(typeof(Image));
 
 		string image_name = (string)node["name"];
 		string image_type = image_name.Split('_')[0];
@@ -525,20 +523,19 @@ public class SuperMetaNode : SuperContainer
 		//TODO: GET RECT TRANSFORM POSITIONS
 		if(node.name == null)
 		{
-			//Debug.Log(tab + node.GetType() + "    " + node.GetPosition());
+			Debug.Log(tab + node.GetType() + "    " + node.GetComponent<RectTransform>().position);
 		}else{
-			//Debug.Log(tab + node.name + "    " + node.GetPosition());
+			Debug.Log(tab + node.gameObject.name + "    " + node.GetComponent<RectTransform>().position);
 		}
 
 		if(node is SuperContainer)
 		{
 			SuperContainer container = node as SuperContainer;
-			//TODO: LOOP THROUGH CHILDREN AND PRINT
-			// int num_children = container.GetChildCount();
-			// for(int i = 0; i < num_children; i++)
-			// {
-			// 	PrintDisplayTree(container.GetChildAt(i), current_depth+1);
-			// }
+			Transform transform = container.GetComponent<Transform>();
+			foreach(Transform child in transform)
+			{
+				PrintDisplayTree(child.GetComponent<SuperNode>(), current_depth+1);
+			}
 		}
 
 	}

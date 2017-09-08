@@ -24,5 +24,5 @@ public class SuperNode : MonoBehaviour
 			rect_transform.localPosition = new Vector3(resetX, resetY, 0f);
 		}
 
-	}	
+	}
 }
