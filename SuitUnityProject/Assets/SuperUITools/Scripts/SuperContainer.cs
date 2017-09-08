@@ -4,16 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-//useful to disambiguate between things that act like containers (buttons, tabs, etc)
-//and things that are JUST containers (container)
-public class SuperContainerBase : SuperNode 
-{
-    
-}
-
-
+//when creating custom SuperContainers, extend SuperContainer and not SuperContainerBase
+//descendants of SuperContainerBase are assumed to be controls and not true containers
 public class SuperContainer : SuperContainerBase 
 {
+    //TODO: figure out a cleaner way to do this
     [HideInInspector]
     public bool flattenMe = false;
 }

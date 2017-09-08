@@ -11,12 +11,49 @@ public class SuperFont
     public Font font;
 }
 
+[System.Serializable]
+public class DefaultControl
+{
+    public string name;
+    public string scriptName;
+
+    public DefaultControl(string name, string scriptName)
+    {
+        this.name = name;
+        this.scriptName = scriptName;
+    }
+}
+
+[System.Serializable]
+public class CustomControl
+{
+    public string name;
+    public string prefix;
+    public string scriptName;
+}
+
 public class SuperConfig : MonoBehaviour 
 {
-    public SuperFont[] localFonts;
+    public SuperFont[] localFonts; 
+
+    //exported metadata can be of three types:
+    //container (any photoshop group)
+    //image (any layer exported as a PNG)
+    //text (a text layer prefixed with "text_")
+
+    //for image and text, it makes sense to only have one receiver that knows what to do
+    //these are "simple" objects and typically don't have complex behavior associated
+    //you can still override the defaults... but you have to override the whole thing
+    public DefaultControl imageClass = new DefaultControl("Default Image","SuperSprite");
+    public DefaultControl textClass = new DefaultControl("Default UI Text","SuperLabel");
+    public DefaultControl containerClass = new DefaultControl("Default Container","SuperContainer");
+    
+    //a container can either be a true container or a proxy for a UI control (most commonly buttons)
+    public CustomControl[] customControls;
 
     private static SuperConfig _instance = null;
     public static Dictionary<string, Font> fonts;
+    public static Dictionary<string, Type> controls;
     
     public static SuperConfig instance
     {
@@ -43,6 +80,33 @@ public class SuperConfig : MonoBehaviour
         }
     }
 
+    public static void RefreshAll()
+    {
+        RefreshComponents();
+        RefreshFonts();
+    }
+
+    public static void RefreshComponents()
+    {
+        controls = new Dictionary<string, Type>();
+        foreach(CustomControl control in instance.customControls)
+        {
+            Type control_type = Type.GetType(control.scriptName);
+            if(control_type == null)
+            {
+                Debug.Log("[ERROR] " + control.scriptName + " COULD NOT BE FOUND");
+                continue;
+            }
+
+            if(control_type.IsSubclassOf(typeof(SuperContainerBase)))
+            {
+                controls[control.prefix] = control_type;
+            }else{
+                Debug.Log("[ERROR] " + control.scriptName + " IS NOT A DESCENDANT OF SuperContainerBase");
+            }
+
+        }
+    }
 
     public static void RefreshFonts()
     {
@@ -54,6 +118,7 @@ public class SuperConfig : MonoBehaviour
     }
     public static Font GetFont(string name)
     {
+        //todo: should I just refresh this every time? or hook into editor modified events to refresh?
         if(fonts == null)
         {
             RefreshFonts();
