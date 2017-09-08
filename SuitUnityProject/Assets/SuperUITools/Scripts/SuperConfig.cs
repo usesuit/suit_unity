@@ -11,30 +11,30 @@ public class SuperFont
     public Font font;
 }
 
-public class SuperFontManager : MonoBehaviour 
+public class SuperConfig : MonoBehaviour 
 {
     public SuperFont[] localFonts;
 
-    private static SuperFontManager _instance = null;
+    private static SuperConfig _instance = null;
     public static Dictionary<string, Font> fonts;
     
-    public static SuperFontManager instance
+    public static SuperConfig instance
     {
         get
         {
             if(_instance == null)
             {
-                SuperFontManager[] managers = FindObjectsOfType<SuperFontManager>();
+                SuperConfig[] managers = FindObjectsOfType<SuperConfig>();
                 if(managers.Length == 0)
                 {
-                    Debug.Log("[WARNING] No Font Manager Found. Making one!");
+                    Debug.Log("[WARNING] No SuperConfig Found. Making one!");
                     GameObject game_object = new GameObject();
-                    SuperFontManager local = game_object.AddComponent(typeof(SuperFontManager)) as SuperFontManager;
+                    SuperConfig local = game_object.AddComponent(typeof(SuperConfig)) as SuperConfig;
                     _instance = local;
                 }else if(managers.Length == 1){
                     _instance = managers[0];
                 }else{
-                    Debug.Log("[ERROR] TOO MANY FONT MANAGERS");
+                    Debug.Log("[ERROR] TOO MANY SUPERCONFIGS");
                     _instance = managers[0];
                 }
             }

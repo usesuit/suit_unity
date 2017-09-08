@@ -152,7 +152,7 @@ public class SuperMetaNode : SuperContainer
                 }
             }
         }
-		
+
 	}
 
 	List<SuperNode> ProcessChildren(List<object> children)
@@ -402,11 +402,11 @@ public class SuperMetaNode : SuperContainer
 		label.horizontalOverflow = HorizontalWrapMode.Overflow;
 
 		string font = (string)node["font"];
-		if(SuperFontManager.GetFont(font) != null)
+		if(SuperConfig.GetFont(font) != null)
 		{
-			label.font = SuperFontManager.GetFont(font);
+			label.font = SuperConfig.GetFont(font);
 		}else{
-			Debug.Log("[WARNING] SuperFontManager not able to find " + font + " -- falling back to Arial");
+			Debug.Log("[WARNING] SuperConfig not able to find " + font + " -- falling back to Arial");
 		}
 
 		string text = (string)node["text"];

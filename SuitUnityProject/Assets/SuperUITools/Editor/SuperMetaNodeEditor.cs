@@ -92,7 +92,7 @@ public class SuperMetaNodeEditor : Editor
             if(GUILayout.Button("Construct Node"))
             {
                 Debug.Log("MAKE IT FROM " + node.metadata);
-                SuperFontManager.RefreshFonts();
+                SuperConfig.RefreshFonts();
                 node.ProcessMetadata();
                 PostProcessMetadata();
             }
@@ -100,8 +100,9 @@ public class SuperMetaNodeEditor : Editor
             if(GUILayout.Button("Update Node"))
             {
 				node.RemoveAllChildren();
-				//node.ProcessMetadata();
-				//PostProcessMetadata();
+                SuperConfig.RefreshFonts();
+                node.ProcessMetadata();
+                PostProcessMetadata();
             }
 
             EditorGUILayout.EndHorizontal();
