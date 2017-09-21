@@ -25,4 +25,10 @@ public class SuperNode : MonoBehaviour
 		}
 
 	}
+
+
+	virtual public void ProcessMetadata(Dictionary<string,object> metadata)
+	{
+		Debug.Log("[ERROR] shouldn't ever call SuperNode.ProcessMetadata. Override me instead.");
+	}
 }

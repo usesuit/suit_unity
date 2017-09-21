@@ -92,7 +92,11 @@ public class SuperMetaNodeEditor : Editor
             if(GUILayout.Button("Construct Node"))
             {
                 Debug.Log("MAKE IT FROM " + node.metadata);
-                SuperConfig.RefreshAll();
+                
+                SuperContainerConfig.RefreshClasses();
+                SuperLabelConfig.RefreshAll();
+                SuperSpriteConfig.RefreshClasses();                
+
                 node.ProcessMetadata();
                 PostProcessMetadata();
             }
@@ -100,7 +104,11 @@ public class SuperMetaNodeEditor : Editor
             if(GUILayout.Button("Update Node"))
             {
 				node.RemoveAllChildren();
-                SuperConfig.RefreshAll();
+                
+                SuperContainerConfig.RefreshClasses();
+                SuperLabelConfig.RefreshAll();
+                SuperSpriteConfig.RefreshClasses();
+                
                 node.ProcessMetadata();
                 PostProcessMetadata();
             }
@@ -127,6 +135,7 @@ public class SuperMetaNodeEditor : Editor
         {
             if(use_atlas)
             {
+                Debug.Log("USE THE ATLAS FOR " + super_sprite.imageName);
                 Sprite sprite = node.atlas.GetSprite(super_sprite.imageName);
                 super_sprite.GetComponent<Image>().sprite = sprite;
             }else{

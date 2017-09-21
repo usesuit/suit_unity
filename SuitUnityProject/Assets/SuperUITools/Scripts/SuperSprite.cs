@@ -29,7 +29,11 @@ public class SuperSprite : SuperNode
         {
             if(rootNode.atlas != null)
             {
+                Debug.Log("ROOT NODE HAS ATLAS");
                 Sprite sprite = rootNode.atlas.GetSprite(imageName);
+                Debug.Log(sprite);
+                Debug.Log("SPRITE: " + sprite);
+                Debug.Log("WIRING UP " + imageName);
                 GetComponent<Image>().sprite = sprite;
             }else{
                 Debug.Log("no atlas");

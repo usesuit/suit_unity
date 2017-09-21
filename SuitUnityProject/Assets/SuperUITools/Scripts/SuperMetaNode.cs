@@ -402,11 +402,11 @@ public class SuperMetaNode : SuperContainer
 		label.horizontalOverflow = HorizontalWrapMode.Overflow;
 
 		string font = (string)node["font"];
-		if(SuperConfig.GetFont(font) != null)
+		if(SuperLabelConfig.GetFont(font) != null)
 		{
-			label.font = SuperConfig.GetFont(font);
+			label.font = SuperLabelConfig.GetFont(font);
 		}else{
-			Debug.Log("[WARNING] SuperConfig not able to find " + font + " -- falling back to Arial");
+			Debug.Log("[WARNING] SuperLabelConfig not able to find " + font + " -- falling back to Arial");
 		}
 
 		string text = (string)node["text"];
