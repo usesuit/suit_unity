@@ -31,7 +31,7 @@ public class SuperSpriteConfig : MonoBehaviour
                 if(sprite_config == null)
                 {
                     sprite_config = config_go.AddComponent(typeof(SuperSpriteConfig)) as SuperSpriteConfig;
-                    sprite_config.customSprites = new CustomClass[2];
+                    sprite_config.customSprites = new CustomClass[0];
 
                     _instance = sprite_config;
                 }
