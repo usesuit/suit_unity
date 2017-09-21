@@ -30,7 +30,8 @@ public class SuperSpriteConfig : MonoBehaviour
                 if(sprite_config == null)
                 {
                     sprite_config = config_go.AddComponent(typeof(SuperSpriteConfig)) as SuperSpriteConfig;
-                    sprite_config.customSprites = new CustomClass[0];
+                    sprite_config.customSprites = new CustomClass[1];
+                    sprite_config.customSprites[0] = new CustomClass("Scale Button", "scalebtn", "SuperScaleButton");
                 }
 
                 _instance = sprite_config;
@@ -40,7 +41,7 @@ public class SuperSpriteConfig : MonoBehaviour
         }
     }
 
-    public static SuperNode ProcessSpriteNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
+    public static SuperNode ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
     {
         GameObject game_object = new GameObject();
         RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
@@ -49,6 +50,13 @@ public class SuperSpriteConfig : MonoBehaviour
 
         string image_name = (string)node["name"];
         string image_type = image_name.Split('_')[0];
+
+        if(spriteClasses.ContainsKey(image_type))
+        {
+            Debug.Log("USE A CUSTOM CLASS FOR " + image_type);
+            // spriteClasses[image_type].ProcessNode(root_node, parent, node);
+            // return;
+        }
 
         sprite.name = image_name;
         sprite.assetPath = root_node.imagePath + "/" + image_name + ".png";
@@ -102,6 +110,7 @@ public class SuperSpriteConfig : MonoBehaviour
                 Debug.Log("[ERROR] " + custom_sprite.scriptName + " COULD NOT BE FOUND");
                 continue;
             }
+            spriteClasses[custom_sprite.prefix] = sprite_class;
         }
     }
 

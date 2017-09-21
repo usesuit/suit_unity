@@ -103,7 +103,7 @@ public class SuperMetaNode : SuperContainer
                     {
                         got_one = true;
 
-                        SuperNode node_child = SuperContainerConfig.ProcessContainerNode(this, transform, raw_node);
+                        SuperNode node_child = SuperContainerConfig.ProcessNode(this, transform, raw_node);
                         SuperContainer container = node_child as SuperContainer;
 
                         //clear out the reset!
@@ -149,6 +149,9 @@ public class SuperMetaNode : SuperContainer
 
 	}
 
+	// this one is weird... ideally i'd like to move it out of SuperMetaNode since
+	// theoretically only a Container can have children... but maybe containers
+	// don't need to know about images/labels/placeholders?
 	public void ProcessChildren(Transform parent, List<object> children)
 	{
 		foreach(object raw_node in children)
@@ -158,7 +161,7 @@ public class SuperMetaNode : SuperContainer
 			switch(node_type)
 			{
 				case "container":
-					SuperContainerConfig.ProcessContainerNode(this, parent, node);
+					SuperContainerConfig.ProcessNode(this, parent, node);
 					// if(container is SuperContainer)
 					// {
 					// 	SuperContainer super_container = container as SuperContainer;
@@ -179,10 +182,10 @@ public class SuperMetaNode : SuperContainer
 					// }
 					break;
 				case "text":
-					SuperLabelConfig.ProcessLabelNode(this, parent, node);
+					SuperLabelConfig.ProcessNode(this, parent, node);
 					break;
 				case "image":
-					SuperSpriteConfig.ProcessSpriteNode(this, parent, node);
+					SuperSpriteConfig.ProcessNode(this, parent, node);
 					break;
 				case "placeholder":
 					ProcessPlaceholderNode(node);

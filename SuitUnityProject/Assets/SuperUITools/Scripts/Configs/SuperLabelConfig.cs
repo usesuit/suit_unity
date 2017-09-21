@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.U2D;
 
-public class SuperLabelConfig : MonoBehaviour 
+public class SuperLabelConfig : MonoBehaviour
 {
     public SuperFont[] localFonts;
     
@@ -46,7 +46,7 @@ public class SuperLabelConfig : MonoBehaviour
 
     //if we match bounds exactly the text doesn't render
     public const float TEXT_VERTICAL_PADDING = 2f;
-    public static SuperNode ProcessLabelNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
+    public static SuperNode ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
     {
         GameObject game_object = new GameObject();
         RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
@@ -138,6 +138,7 @@ public class SuperLabelConfig : MonoBehaviour
                 Debug.Log("[ERROR] " + custom_label.scriptName + " COULD NOT BE FOUND");
                 continue;
             }
+            labelClasses[custom_label.prefix] = label_class;
         }
     }
 

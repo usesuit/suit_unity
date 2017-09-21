@@ -40,7 +40,7 @@ public class SuperContainerConfig : MonoBehaviour
         }
     }
 
-    public static SuperNode ProcessContainerNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
+    public static SuperNode ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
     {
         GameObject game_object = new GameObject();
         RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
@@ -48,21 +48,24 @@ public class SuperContainerConfig : MonoBehaviour
 
         string name = (string)node["name"];
         string container_type = name.Split('_')[0];
-        string container_name = null;
+        Debug.Log("TESTING " + container_type);
+        List<string> keys = new List<string>(containerClasses.Keys);
+        Debug.Log(String.Join(",", keys.ToArray()));
+        if(containerClasses.ContainsKey(container_type))
+        {
+            Debug.Log("USE A CUSTOM CLASS FOR " + container_type);
+            object[] args = new object[3];
+            args[0] = root_node;
+            args[1] = parent;
+            args[2] = node;
+            containerClasses[container_type].GetMethod("ProcessNode").Invoke(null, args);
+            return null;
+        }else{
+            Debug.Log(name + " IS A REGULAR CONTAINER");
+        }
 
         switch(container_type)
         {
-            case "container":
-
-                DestroyImmediate(container);
-                SuperContainer real_container = game_object.AddComponent(typeof(SuperContainer)) as SuperContainer;
-
-                container_name = name.Replace("container_", "");
-                root_node.containers[container_name] = real_container;
-                real_container.name = container_name;
-                container = real_container;
-                break;
-
             case "btn":
                 //TODO: BUTTONS
                 // DAButton button = new DAButton();
@@ -120,17 +123,14 @@ public class SuperContainerConfig : MonoBehaviour
                 break;
 
             default:
-                //if not a whitelisted container, this was an organizational container
-                //just flatten the content into our parent as if this node wasn't there
+                //not whitelisted! we're just an everyday container
                 DestroyImmediate(container);
-                SuperContainer rescue_container = game_object.AddComponent(typeof(SuperContainer)) as SuperContainer;
-                rescue_container.flattenMe = true;
-                container = rescue_container;
+                SuperContainer real_container = game_object.AddComponent(typeof(SuperContainer)) as SuperContainer;
+                root_node.containers[name] = real_container;
+                real_container.name = name;
+                container = real_container;
                 break;
         }
-
-
-        root_node.ProcessChildren(container.transform, node["children"] as List<object>);
 
         //if we're a button, update our state
         // if(container is DAButtonBase)
@@ -172,22 +172,24 @@ public class SuperContainerConfig : MonoBehaviour
         container.transform.SetParent(parent);
         container.Reset();
 
+        root_node.ProcessChildren(container.transform, node["children"] as List<object>);
+
         return container;
     }
 
     public static void RefreshClasses()
     {
         containerClasses = new Dictionary<string, Type>();
-        Debug.Log(instance);
-        Debug.Log(instance.customContainers);
         foreach(CustomClass custom_container in instance.customContainers)
         {
+            Debug.Log("CUSTOM CONTAINER: " + custom_container.prefix + " -> " + custom_container.scriptName);
             Type container_class = Type.GetType(custom_container.scriptName);
             if(container_class == null)
             {
                 Debug.Log("[ERROR] " + custom_container.scriptName + " COULD NOT BE FOUND");
                 continue;
             }
+            containerClasses[custom_container.prefix] = container_class;
         }
     }
     
