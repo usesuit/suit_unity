@@ -88,13 +88,7 @@ public class SuperMetaNode : SuperContainer
         {
             if(rootContainer == "(root)")
             {
-                List<SuperNode> children = ProcessChildren(json["children"] as List<object>);
-
-                foreach(SuperNode child in children)
-                {
-					child.transform.SetParent(transform);
-					child.Reset();
-                }
+            	ProcessChildren(transform, json["children"] as List<object>);
             }else{
 
                 bool got_one = false;
@@ -109,7 +103,7 @@ public class SuperMetaNode : SuperContainer
                     {
                         got_one = true;
 
-                        SuperNode node_child = ProcessContainerNode(raw_node);
+                        SuperNode node_child = SuperContainerConfig.ProcessContainerNode(this, transform, raw_node);
                         SuperContainer container = node_child as SuperContainer;
 
                         //clear out the reset!
@@ -155,10 +149,8 @@ public class SuperMetaNode : SuperContainer
 
 	}
 
-	List<SuperNode> ProcessChildren(List<object> children)
+	public void ProcessChildren(Transform parent, List<object> children)
 	{
-		List<SuperNode> child_nodes = new List<SuperNode>();
-
 		foreach(object raw_node in children)
 		{
 			Dictionary<string,object> node = raw_node as Dictionary<string,object>;
@@ -166,185 +158,40 @@ public class SuperMetaNode : SuperContainer
 			switch(node_type)
 			{
 				case "container":
-					SuperNode container = ProcessContainerNode(node);
-					if(container is SuperContainer)
-					{
-						SuperContainer super_container = container as SuperContainer;
-						if(super_container.flattenMe)
-						{
-							foreach(Transform child in super_container.transform)
-							{
-								SuperNode child_node = child.GetComponent<SuperNode>();
-								child_node.resetX += container.resetX;
-								child_node.resetY += container.resetY;
-								child_nodes.Add(child_node);
-							}
-						}else{
-							child_nodes.Add(container);
-						}
-					}else{
-						child_nodes.Add(container);
-					}
+					SuperContainerConfig.ProcessContainerNode(this, parent, node);
+					// if(container is SuperContainer)
+					// {
+					// 	SuperContainer super_container = container as SuperContainer;
+					// 	if(super_container.flattenMe)
+					// 	{
+					// 		foreach(Transform child in super_container.transform)
+					// 		{
+					// 			SuperNode child_node = child.GetComponent<SuperNode>();
+					// 			child_node.resetX += container.resetX;
+					// 			child_node.resetY += container.resetY;
+					// 			child_nodes.Add(child_node);
+					// 		}
+					// 	}else{
+					// 		child_nodes.Add(container);
+					// 	}
+					// }else{
+					// 	child_nodes.Add(container);
+					// }
 					break;
 				case "text":
-					child_nodes.Add(ProcessTextNode(node));
+					SuperLabelConfig.ProcessLabelNode(this, parent, node);
 					break;
 				case "image":
-					child_nodes.Add(ProcessImageNode(node));
+					SuperSpriteConfig.ProcessSpriteNode(this, parent, node);
 					break;
 				case "placeholder":
-
-					SuperNode maybe = ProcessPlaceholderNode(node);
-					if(maybe != null)
-					{
-						// do we need a reference to our modal w/Canvas system?
-						// modal = maybe;
-						child_nodes.Add(maybe);
-					}
+					ProcessPlaceholderNode(node);
 					break;
 				default:
 					Debug.Log("UH OH -- INVALID NODE FOUND: " + node_type);
 					break;
 			}
 		}
-
-		return child_nodes;
-	}
-
-	SuperNode ProcessContainerNode(Dictionary<string,object> node)
-	{
-		GameObject game_object = new GameObject();
-		RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
-		SuperContainerBase container = game_object.AddComponent(typeof(SuperContainerBase)) as SuperContainerBase;
-
-		string name = (string)node["name"];
-		string container_type = name.Split('_')[0];
-		string container_name = null;
-
-		switch(container_type)
-		{
-			case "container":
-
-				DestroyImmediate(container);
-				SuperContainer real_container = game_object.AddComponent(typeof(SuperContainer)) as SuperContainer;
-
-				container_name = name.Replace("container_", "");
-				containers[container_name] = real_container;
-				real_container.name = container_name;
-				container = real_container;
-				break;
-
-			case "btn":
-				//TODO: BUTTONS
-				// DAButton button = new DAButton();
-
-				// string btn_name = name.Replace("btn_", "");
-				// buttons[btn_name] = button;
-
-				// button.name = btn_name;
-
-				// container = button;
-				break;
-
-			case "scalebtn":
-				//TODO: SCALE BUTTONS
-				// DAScaleButton scale_button = new DAScaleButton();
-
-				// string scalebtn_name = name.Replace("scalebtn_", "");
-				// buttons[scalebtn_name] = scale_button;
-
-				// scale_button.name = scalebtn_name;
-
-				// container = scale_button;
-				break;
-
-			case "progress":
-				//TODO: PROGRESS
-				// DAProgressBar progress = new DAProgressBar();
-
-				// string progress_name = name.Replace("progress_","");
-				// progressBars[progress_name] = progress;
-
-				// progress.name = progress_name;
-
-				// container = progress;
-				break;
-
-			case "tab":
-				//TODO: TABS
-				// DATab tab = new DATab();
-
-				// string tab_name = name.Replace("tab_","");
-				// tabs[tab_name] = tab;
-
-				// tab.name = tab_name;
-
-				// container = tab;
-				break;
-
-			case "scale9":
-				//TODO: SCALE9
-				break;
-
-			case "paragraph":
-				//TODO: PARAGRAPH
-				break;
-
-			default:
-				//if not a whitelisted container, this was an organizational container
-				//just flatten the content into our parent as if this node wasn't there
-				DestroyImmediate(container);
-				SuperContainer rescue_container = game_object.AddComponent(typeof(SuperContainer)) as SuperContainer;
-				rescue_container.flattenMe = true;
-				container = rescue_container;
-				break;
-		}
-
-		List<SuperNode> children = ProcessChildren(node["children"] as List<object>);
-		foreach(SuperNode child in children)
-		{
-			child.transform.SetParent(container.transform);
-			child.Reset();
-		}
-
-		//if we're a button, update our state
-		// if(container is DAButtonBase)
-		// {
-		// 	(container as DAButtonBase).UpdateDisplay();
-		// }
-
-		// if(container is DATab)
-		// {
-		// 	(container as DATab).CreateStates();
-		// }
-
-		List<object> position = node["position"] as List<object>;
-		float x = Convert.ToSingle(position[0]);
-		float y = Convert.ToSingle(position[1]);
-
-		List<object> size = node["size"] as List<object>;
-		float w = Convert.ToSingle(size[0]);
-		float h = Convert.ToSingle(size[1]);
-                   
-		rect_transform.position = new Vector2(x, y);
-		rect_transform.sizeDelta = new Vector2(w, h);
-
-		if(node.ContainsKey("pivot"))
-		{
-			List<object> pivot = node["pivot"] as List<object>;
-			float pivot_x = Convert.ToSingle(pivot[0]);
-			float pivot_y = Convert.ToSingle(pivot[1]);		
-
-			rect_transform.pivot = new Vector2(0.5f - pivot_x/w, 0.5f - pivot_y/h);
-		}
-
-		container.resetX = x;
-		container.resetY = y;
-
-		container.cachedMetadata = node;
-		container.rootNode = this;
-
-		return container;
 	}
 
 	SuperNode ProcessScale9Node(Dictionary<string,object> node)
@@ -373,137 +220,12 @@ public class SuperMetaNode : SuperContainer
 		return container;
 	}
 
-	//if we match bounds exactly the text doesn't render
-	public const float TEXT_VERTICAL_PADDING = 2f;
-	SuperNode ProcessTextNode(Dictionary<string,object> node)
-	{
-		GameObject game_object = new GameObject();
-		RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
-		SuperLabel super_label = game_object.AddComponent(typeof(SuperLabel)) as SuperLabel;
-		Text label = game_object.AddComponent(typeof(Text)) as Text;
-
-		string name = (string)node["name"];
-		game_object.name = name;
-
-		List<object> position = node["position"] as List<object>;
-		float x = Convert.ToSingle(position[0]);
-		float y = Convert.ToSingle(position[1]);
-
-		List<object> size = node["size"] as List<object>;
-		float w = Convert.ToSingle(size[0]);
-		float h = Convert.ToSingle(size[1]);
-
-		rect_transform.position = new Vector2(x, y);
-		rect_transform.sizeDelta = new Vector2(w, h * TEXT_VERTICAL_PADDING);
-
-		super_label.resetX = x;
-		super_label.resetY = y;
-
-		label.horizontalOverflow = HorizontalWrapMode.Overflow;
-
-		string font = (string)node["font"];
-		if(SuperLabelConfig.GetFont(font) != null)
-		{
-			label.font = SuperLabelConfig.GetFont(font);
-		}else{
-			Debug.Log("[WARNING] SuperLabelConfig not able to find " + font + " -- falling back to Arial");
-		}
-
-		string text = (string)node["text"];
-		label.text = text;
-
-		int font_size = Convert.ToInt32(node["fontSize"]);
-		label.fontSize = font_size;
-
-		string font_color_hex = (string)node["color"];
-		label.color = HexToColor(font_color_hex);
-
-		if(node.ContainsKey("justification"))
-		{
-			string alignment = (string)node["justification"];
-			if(alignment == "center")
-			{
-				label.alignment = TextAnchor.MiddleCenter;
-			}else if(alignment == "left"){
-				label.alignment = TextAnchor.MiddleLeft;
-				rect_transform.pivot = new Vector2(0f , 0.5f);
-				
-				//no reset adjustment needed. setting us to our old position will move us left w/2
-			}else if(alignment == "right"){
-				label.alignment = TextAnchor.MiddleRight;
-				rect_transform.pivot = new Vector2(1f , 0.5f);
-				
-				//moving the pivot effectively translates us w/2, so we need to move a full with
-				super_label.resetX = x + 2;
-			}
-
-		}
-
-		super_label.cachedMetadata = node;
-		super_label.rootNode = this;
-
-		labels[name] = super_label;
-
-		return super_label;
-	}
-
-	SuperNode ProcessImageNode(Dictionary<string,object> node)
-	{
-		GameObject game_object = new GameObject();
-		RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
-		SuperSprite sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
-		game_object.AddComponent(typeof(Image));
-
-		string image_name = (string)node["name"];
-		string image_type = image_name.Split('_')[0];
-
-		sprite.name = image_name;
-		sprite.assetPath = imagePath + "/" + image_name + ".png";
-		sprite.imageName = image_name;
-
-		if(image_type == "flipX")
-		{
-			sprite.flipX = true;
-		}
-
-		if(image_type == "scalebtn")
-		{
-			Debug.Log("TODO: SCALEBTN");
-		}
-
-
-		List<object> position = node["position"] as List<object>;
-		float x = Convert.ToSingle(position[0]);
-		float y = Convert.ToSingle(position[1]);
-
-		List<object> size = node["size"] as List<object>;
-		float w = Convert.ToSingle(size[0]);
-		float h = Convert.ToSingle(size[1]);
-                   
-		rect_transform.position = new Vector2(x, y);
-		rect_transform.sizeDelta = new Vector2(w, h);
-
-		sprite.resetX = x;
-		sprite.resetY = y;
-
-		
-		sprites[image_name] = sprite;
-
-		sprite.cachedMetadata = node;
-		sprite.rootNode = this;
-
-		return sprite;
-	}	
-
-	SuperNode ProcessPlaceholderNode(Dictionary<string,object> node)
+	void ProcessPlaceholderNode(Dictionary<string,object> node)
 	{
 		//return a MODAL if the placeholder is named modal
 		// GameObject game_object = new GameObject();
 		// RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
 		// SuperNode container = game_object.AddComponent(typeof(SuperNode)) as SuperNode;
-
-
-		return null;
 	}
 
 	public void PrintDisplayTree()
@@ -547,18 +269,6 @@ public class SuperMetaNode : SuperContainer
 
 
 
-	public static string ColorToHex(Color color)
-	{
-		string hex = color.r.ToString("X2") + color.g.ToString("X2") + color.b.ToString("X2");
-		return hex;
-	}
-
-	public static Color HexToColor(string hex)
-	{
-		byte r = byte.Parse(hex.Substring(0,2), System.Globalization.NumberStyles.HexNumber);
-		byte g = byte.Parse(hex.Substring(2,2), System.Globalization.NumberStyles.HexNumber);
-		byte b = byte.Parse(hex.Substring(4,2), System.Globalization.NumberStyles.HexNumber);
-		return new Color32(r,g,b, 255);
-	}
+	
 
 }
