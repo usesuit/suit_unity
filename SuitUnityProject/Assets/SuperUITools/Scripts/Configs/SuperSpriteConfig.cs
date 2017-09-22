@@ -108,6 +108,9 @@ public class SuperSpriteConfig : MonoBehaviour
         game_object.transform.SetParent(parent);
 
         sprite.Reset();
+
+        //TODO: think about setting NotEditable on all generated nodes...
+        //game_object.hideFlags |= HideFlags.NotEditable;
     }
 
     public static void RefreshClasses()
