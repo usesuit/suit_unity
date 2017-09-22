@@ -49,11 +49,12 @@ public class SuperSpriteConfig : MonoBehaviour
         List<string> keys = new List<string>(spriteClasses.Keys);
         if(spriteClasses.ContainsKey(image_type))
         {
-            object[] args = new object[3];
-            args[0] = root_node;
-            args[1] = parent;
-            args[2] = node;
-            spriteClasses[image_type].GetMethod("ProcessNode").Invoke(null, args);
+            Debug.Log("TODO: USE CUSTOM SPRITE CLASS -> " + spriteClasses[image_type]);
+            // object[] args = new object[3];
+            // args[0] = root_node;
+            // args[1] = parent;
+            // args[2] = node;
+            // spriteClasses[image_type].GetMethod("ProcessNode").Invoke(null, args);
         }
 
         if(spriteClasses.ContainsKey(image_type))
