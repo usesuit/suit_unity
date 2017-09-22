@@ -53,6 +53,7 @@ public class SuperContainerConfig : MonoBehaviour
             args[1] = parent;
             args[2] = node;
             containerClasses[container_type].GetMethod("ProcessNode").Invoke(null, args);
+            return;
         }
 
         GameObject game_object = new GameObject();
