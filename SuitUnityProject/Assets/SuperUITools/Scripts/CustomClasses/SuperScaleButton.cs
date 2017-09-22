@@ -1,17 +1,27 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
+
+using UnityEditor;
+using UnityEditor.Animations;
+using UnityEditor.Events;
+
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.U2D;
 
 public class SuperScaleButton : SuperButtonBase 
 {
 
+    override public void HandleClick()
+    {
+        Debug.Log("CLICK FOR REAL");
+    }
+
 	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
     {
-    	Debug.Log("FOOLED YOU DOING THE SAME THING AS Container FOR NOW");
-
         //SuperScaleButton takes two inputs:
         //  a contaner named scalebtn_
         //  a single sprite named scalebtn_
@@ -55,6 +65,39 @@ public class SuperScaleButton : SuperButtonBase
 
             sprite.Reset();
         }
+
+        Button uibutton = game_object.AddComponent(typeof(Button)) as Button;
+        
+        Animator animator = game_object.AddComponent(typeof(Animator)) as Animator;
+        string[] results = AssetDatabase.FindAssets("ScaleButton t:AnimatorController");
+        if(results.Length == 0)
+        {
+            Debug.Log("[ERROR] could not find ScaleButton.controller for ScaleButton animation");
+        }else if(results.Length > 1){
+            Debug.Log("[ERROR] more than one ScaleButton.controller was found. using the first one!");
+        }else{
+            string guid = results[0];
+            string path = AssetDatabase.GUIDToAssetPath(guid);
+
+            AnimatorController scale_anim = (AnimatorController)AssetDatabase.LoadAssetAtPath(path, typeof(AnimatorController));
+            animator.runtimeAnimatorController = scale_anim;
+        }
+        
+
+
+        uibutton.transition = Selectable.Transition.Animation;
+
+        //prevent the weird mouseout-while-pressed bug
+        Navigation none = new Navigation();
+        none.mode = Navigation.Mode.None;
+        uibutton.navigation = none;
+
+        
+        //Wire up the listener in the editor
+        MethodInfo method_info = UnityEventBase.GetValidMethodInfo(button, "HandleClick", new Type[]{});
+        UnityAction method_delegate = System.Delegate.CreateDelegate(typeof(UnityAction), button, method_info) as UnityAction;
+        UnityEventTools.AddPersistentListener(uibutton.onClick, method_delegate);
+
 
         //image nodes don't have children
         if(node.ContainsKey("children"))

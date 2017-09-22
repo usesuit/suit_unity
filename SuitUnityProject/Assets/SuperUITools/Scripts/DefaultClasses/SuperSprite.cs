@@ -17,8 +17,6 @@ public class SuperSprite : SuperNode
     void Start () 
 	{
 		Debug.Log("STARTING SPRITE");
-        
-        
 	}
 
     //this used to hot-swap in Start from a direct image assignment,
@@ -29,23 +27,18 @@ public class SuperSprite : SuperNode
         {
             if(rootNode.atlas != null)
             {
-                Debug.Log("ROOT NODE HAS ATLAS");
                 Sprite sprite = rootNode.atlas.GetSprite(imageName);
-                Debug.Log(sprite);
-                Debug.Log("SPRITE: " + sprite);
-                Debug.Log("ASSIGNING " + imageName);
                 GetComponent<Image>().sprite = sprite;
             }else{
-                Debug.Log("no atlas");
+                Debug.Log("[ERROR] no atlas for sprite " + imageName);
             }
         }else{
-            Debug.Log("no rootNode");
+            Debug.Log("[ERROR] no rootNode for sprite");
         }
     }
 
     override public void Reset()
     {
-        Debug.Log("RESET CALLED");
         base.Reset();
 
         RectTransform rect_transform = GetComponent<RectTransform>();

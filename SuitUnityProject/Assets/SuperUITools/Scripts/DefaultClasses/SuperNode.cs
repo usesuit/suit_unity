@@ -16,12 +16,10 @@ public class SuperNode : MonoBehaviour
 
 	virtual public void Reset()
 	{
-		Debug.Log("SUPERNODE->Reset()... DO I HAVE A RT yet?");
 		RectTransform rect_transform = GetComponent<RectTransform>();
 
 		if(rect_transform == null)
 		{
-			Debug.Log("NO RECT TRANSFORM YET");
 			return;
 		}
 

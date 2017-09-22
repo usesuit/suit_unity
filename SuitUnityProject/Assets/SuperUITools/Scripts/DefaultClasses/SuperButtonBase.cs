@@ -9,5 +9,8 @@ using UnityEngine;
 //some hard coded logic to make grabbing buttons by name a bit easier
 public class SuperButtonBase : SuperContainerBase 
 {
-    
+    virtual public void HandleClick()
+    {
+    	Debug.Log("you done clicked");
+    }
 }
