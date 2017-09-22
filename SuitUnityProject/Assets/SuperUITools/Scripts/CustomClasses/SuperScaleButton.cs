@@ -8,7 +8,7 @@ using UnityEngine.U2D;
 public class SuperScaleButton : SuperButtonBase 
 {
 
-	public static SuperNode ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
+	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
     {
     	Debug.Log("FOOLED YOU DOING THE SAME THING AS Container FOR NOW");
 
@@ -16,49 +16,50 @@ public class SuperScaleButton : SuperButtonBase
         //  a contaner named scalebtn_
         //  a single sprite named scalebtn_
         //  the end result is the same!
+        //  but if we're just an image... let's fake being an image inside a container
+
+
         string node_type = (string)node["type"];
-        
         string name = (string)node["name"];
-        string container_type = name.Split('_')[0];
 
         GameObject game_object = new GameObject();
-        RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
-        SuperContainer container = game_object.AddComponent(typeof(SuperContainer)) as SuperContainer;
+        SuperScaleButton button = game_object.AddComponent(typeof(SuperScaleButton)) as SuperScaleButton;
 
-        root_node.containers[name] = container;
-        container.name = name;
+        button.CreateRectTransform(game_object, node);
+        button.name = name;
+        button.rootNode = root_node;
+        button.cachedMetadata = node;
 
-        List<object> position = node["position"] as List<object>;
-        float x = Convert.ToSingle(position[0]);
-        float y = Convert.ToSingle(position[1]);
-
-        List<object> size = node["size"] as List<object>;
-        float w = Convert.ToSingle(size[0]);
-        float h = Convert.ToSingle(size[1]);
-                  
-        rect_transform.position = new Vector2(x, y);
-        rect_transform.sizeDelta = new Vector2(w, h);
-
-        if(node.ContainsKey("pivot"))
-        {
-            List<object> pivot = node["pivot"] as List<object>;
-            float pivot_x = Convert.ToSingle(pivot[0]);
-            float pivot_y = Convert.ToSingle(pivot[1]);     
-
-            rect_transform.pivot = new Vector2(0.5f - pivot_x/w, 0.5f - pivot_y/h);
-        }
-
-        container.resetX = x;
-        container.resetY = y;
-
-        container.cachedMetadata = node;
-        container.rootNode = root_node;
+        root_node.buttons[name] = button;
 
         game_object.transform.SetParent(parent);
-        container.Reset();
+        button.Reset();
 
-        root_node.ProcessChildren(container.transform, node["children"] as List<object>);
+        if(node_type == "image")
+        {
+            SuperSprite sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
+            game_object.AddComponent(typeof(Image));
 
-        return container;
+            sprite.name = name;
+            sprite.rootNode = root_node;
+            sprite.cachedMetadata = node;
+            
+            sprite.assetPath = root_node.imagePath + "/" + name + ".png";
+            sprite.imageName = name;
+
+            sprite.resetX = button.resetX;
+            sprite.resetY = button.resetY;
+
+            root_node.sprites[name] = sprite;
+            game_object.transform.SetParent(parent);
+
+            sprite.Reset();
+        }
+
+        //image nodes don't have children
+        if(node.ContainsKey("children"))
+        {
+            root_node.ProcessChildren(game_object.transform, node["children"] as List<object>);
+        }
     }
 }

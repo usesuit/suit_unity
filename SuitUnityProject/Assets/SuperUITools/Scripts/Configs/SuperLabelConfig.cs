@@ -44,31 +44,16 @@ public class SuperLabelConfig : MonoBehaviour
         }
     }
 
-    //if we match bounds exactly the text doesn't render
-    public const float TEXT_VERTICAL_PADDING = 2f;
     public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
     {
         GameObject game_object = new GameObject();
-        RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
         SuperLabel super_label = game_object.AddComponent(typeof(SuperLabel)) as SuperLabel;
         Text label = game_object.AddComponent(typeof(Text)) as Text;
 
+        super_label.CreateRectTransform(game_object, node);
+
         string name = (string)node["name"];
         game_object.name = name;
-
-        List<object> position = node["position"] as List<object>;
-        float x = Convert.ToSingle(position[0]);
-        float y = Convert.ToSingle(position[1]);
-
-        List<object> size = node["size"] as List<object>;
-        float w = Convert.ToSingle(size[0]);
-        float h = Convert.ToSingle(size[1]);
-
-        rect_transform.position = new Vector2(x, y);
-        rect_transform.sizeDelta = new Vector2(w, h * TEXT_VERTICAL_PADDING);
-
-        super_label.resetX = x;
-        super_label.resetY = y;
 
         label.horizontalOverflow = HorizontalWrapMode.Overflow;
 
@@ -91,6 +76,8 @@ public class SuperLabelConfig : MonoBehaviour
 
         if(node.ContainsKey("justification"))
         {
+            RectTransform rect_transform = super_label.GetComponent<RectTransform>();
+
             string alignment = (string)node["justification"];
             if(alignment == "center")
             {
@@ -98,14 +85,9 @@ public class SuperLabelConfig : MonoBehaviour
             }else if(alignment == "left"){
                 label.alignment = TextAnchor.MiddleLeft;
                 rect_transform.pivot = new Vector2(0f , 0.5f);
-                
-                //no reset adjustment needed. setting us to our old position will move us left w/2
             }else if(alignment == "right"){
                 label.alignment = TextAnchor.MiddleRight;
                 rect_transform.pivot = new Vector2(1f , 0.5f);
-                
-                //moving the pivot effectively translates us w/2, so we need to move a full with
-                super_label.resetX = x + 2;
             }
 
         }

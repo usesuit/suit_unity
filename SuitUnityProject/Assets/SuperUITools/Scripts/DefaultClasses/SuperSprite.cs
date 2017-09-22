@@ -45,6 +45,7 @@ public class SuperSprite : SuperNode
 
     override public void Reset()
     {
+        Debug.Log("RESET CALLED");
         base.Reset();
 
         RectTransform rect_transform = GetComponent<RectTransform>();

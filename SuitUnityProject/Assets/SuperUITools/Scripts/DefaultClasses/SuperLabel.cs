@@ -20,5 +20,18 @@ using UnityEngine.UI;
   */
 public class SuperLabel : SuperNode 
 {
-    
+    //if we match bounds exactly the text doesn't render... so lets double it!
+    public const float TEXT_VERTICAL_PADDING = 2f;
+    override public void CreateRectTransform(GameObject game_object, Dictionary<string,object> node)
+    {
+        base.CreateRectTransform(game_object, node);
+        
+        RectTransform rect_transform = game_object.GetComponent<RectTransform>();
+
+        List<object> size = node["size"] as List<object>;
+        float w = Convert.ToSingle(size[0]);
+        float h = Convert.ToSingle(size[1]);
+
+        rect_transform.sizeDelta = new Vector2(w, h*TEXT_VERTICAL_PADDING);
+    }
 }

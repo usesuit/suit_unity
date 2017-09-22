@@ -49,26 +49,20 @@ public class SuperSpriteConfig : MonoBehaviour
         List<string> keys = new List<string>(spriteClasses.Keys);
         if(spriteClasses.ContainsKey(image_type))
         {
-            Debug.Log("TODO: USE CUSTOM SPRITE CLASS -> " + spriteClasses[image_type]);
-            // object[] args = new object[3];
-            // args[0] = root_node;
-            // args[1] = parent;
-            // args[2] = node;
-            // spriteClasses[image_type].GetMethod("ProcessNode").Invoke(null, args);
+            Debug.Log("USE CUSTOM SPRITE CLASS -> " + spriteClasses[image_type]);
+            object[] args = new object[3];
+            args[0] = root_node;
+            args[1] = parent;
+            args[2] = node;
+            spriteClasses[image_type].GetMethod("ProcessNode").Invoke(null, args);
+            return;
         }
-
-        if(spriteClasses.ContainsKey(image_type))
-        {
-            Debug.Log("USE A CUSTOM CLASS FOR " + image_type);
-            // spriteClasses[image_type].ProcessNode(root_node, parent, node);
-            // return;
-        }
-
 
         GameObject game_object = new GameObject();
-        RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
         SuperSprite sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
         game_object.AddComponent(typeof(Image));
+
+        sprite.CreateRectTransform(game_object, node);
 
         sprite.name = image_name;
         sprite.assetPath = root_node.imagePath + "/" + image_name + ".png";
@@ -79,38 +73,15 @@ public class SuperSpriteConfig : MonoBehaviour
             sprite.flipX = true;
         }
 
-        if(image_type == "scalebtn")
-        {
-            Debug.Log("TODO: SCALEBTN");
-        }
-
-
-        List<object> position = node["position"] as List<object>;
-        float x = Convert.ToSingle(position[0]);
-        float y = Convert.ToSingle(position[1]);
-
-        List<object> size = node["size"] as List<object>;
-        float w = Convert.ToSingle(size[0]);
-        float h = Convert.ToSingle(size[1]);
-                   
-        rect_transform.position = new Vector2(x, y);
-        rect_transform.sizeDelta = new Vector2(w, h);
-
-        sprite.resetX = x;
-        sprite.resetY = y;
-
-        
-        root_node.sprites[image_name] = sprite;
-
         sprite.cachedMetadata = node;
         sprite.rootNode = root_node;
-
+        
+        root_node.sprites[image_name] = sprite;
         game_object.transform.SetParent(parent);
-
         sprite.Reset();
 
         //TODO: think about setting NotEditable on all generated nodes...
-        //game_object.hideFlags |= HideFlags.NotEditable;
+        // game_object.hideFlags |= HideFlags.NotEditable;
     }
 
     public static void RefreshClasses()
