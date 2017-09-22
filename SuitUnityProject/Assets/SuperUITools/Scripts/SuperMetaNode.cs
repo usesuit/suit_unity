@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEditor;  // Most of the utilities we are going to use are contained in the UnityEditor namespace
 using UnityEngine.UI;
 using UnityEngine.U2D;
 
@@ -147,6 +148,7 @@ public class SuperMetaNode : SuperContainer
             }
         }
 
+        PostProcessSprites();
 	}
 
 	// this one is weird... ideally i'd like to move it out of SuperMetaNode since
@@ -265,13 +267,33 @@ public class SuperMetaNode : SuperContainer
 
 	}
 
+	void PostProcessSprites()
+	{
+        bool use_atlas = true;
+        if(atlas == null)
+        {
+            Debug.Log("[WARNING] NO ATLAS SET -- FALLING BACK TO DIRECT IMAGES");
+            use_atlas = false;
+        }        
+
+        Debug.Log("WIRING UP " + gameObject.name);
+        foreach(SuperSprite super_sprite in sprites.Values)
+        {
+            if(use_atlas)
+            {
+                Sprite sprite = atlas.GetSprite(super_sprite.imageName);
+                super_sprite.GetComponent<Image>().sprite = sprite;
+            }else{
+                Texture2D texture = (Texture2D)AssetDatabase.LoadMainAssetAtPath(super_sprite.assetPath);
+                super_sprite.GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0,0,texture.width, texture.height), new Vector2(0.5f, 0.5f));
+            }
+        }
+	}
+
 	public void EditorUpdate()
 	{
 
 	}
 
-
-
-	
 
 }

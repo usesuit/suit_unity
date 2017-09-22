@@ -98,7 +98,6 @@ public class SuperMetaNodeEditor : Editor
                 SuperSpriteConfig.RefreshClasses();                
 
                 node.ProcessMetadata();
-                PostProcessMetadata();
             }
 
             if(GUILayout.Button("Update Node"))
@@ -110,7 +109,6 @@ public class SuperMetaNodeEditor : Editor
                 SuperSpriteConfig.RefreshClasses();
                 
                 node.ProcessMetadata();
-                PostProcessMetadata();
             }
 
             EditorGUILayout.EndHorizontal();
@@ -118,33 +116,6 @@ public class SuperMetaNodeEditor : Editor
     }
 
 
-    public void PostProcessMetadata()
-    {
-        SuperMetaNode node = (SuperMetaNode)target;
-        SuperSprite[] sprites = node.GetComponentsInChildren<SuperSprite>();
-
-        bool use_atlas = true;
-        if(node.atlas == null)
-        {
-            Debug.Log("[WARNING] NO ATLAS SET -- FALLING BACK TO DIRECT IMAGES");
-            use_atlas = false;
-        }        
-
-        Debug.Log("WIRING UP " + node.gameObject.name);
-        foreach(SuperSprite super_sprite in sprites)
-        {
-            if(use_atlas)
-            {
-                Sprite sprite = node.atlas.GetSprite(super_sprite.imageName);
-                super_sprite.GetComponent<Image>().sprite = sprite;
-            }else{
-                Texture2D texture = (Texture2D)AssetDatabase.LoadMainAssetAtPath(super_sprite.assetPath);
-                super_sprite.GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0,0,texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            }
-            
-        }
-
-    }
-
+    
 
 }

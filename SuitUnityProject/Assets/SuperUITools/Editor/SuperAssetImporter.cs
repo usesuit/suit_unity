@@ -3,11 +3,16 @@
 //		automatically add it to atlas "foldername"
 
 using UnityEngine;
+using UnityEngine.U2D;
+
 using UnityEditor;  // Most of the utilities we are going to use are contained in the UnityEditor namespace
+using UnityEditor.Sprites;
 
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using System.Linq;
 
 // We inherit from the AssetPostProcessor class which contains all the exposed variables and event triggers for asset importing pipeline
 internal sealed class SuperAssetImporter : AssetPostprocessor 
@@ -32,6 +37,25 @@ internal sealed class SuperAssetImporter : AssetPostprocessor
 		importer.spriteImportMode = SpriteImportMode.Single;
     }
 
+    void OnPostprocessTexture(Texture2D texture)
+    {
+    	Packer.RebuildAtlasCacheIfNeeded(EditorUserBuildSettings.activeBuildTarget, true);
+    }
+
+    void PrintMethods(Type type)
+    {
+    	foreach (var method in type.GetMethods())
+        {
+            var parameters = method.GetParameters();
+            var parameterDescriptions = string.Join
+                (", ", method.GetParameters()
+                             .Select(x => x.ParameterType + " " + x.Name)
+                             .ToArray());
+
+            Debug.Log(method.ReturnType + " " + method.Name + " " + parameterDescriptions);
+        }
+    }
+
 
 
 	static void OnPostprocessAllAssets (string[] importedAssets, string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths) 
@@ -46,14 +70,14 @@ internal sealed class SuperAssetImporter : AssetPostprocessor
 			 {
 				 if(str.Contains("Atlases"))
 				 {
-					PostProcessMetadata(str);
+					HandleMetadataPostprocess(str);
 				 }
 			 }
          }
      }
 
 
-	static void PostProcessMetadata(string filename)
+	static void HandleMetadataPostprocess(string filename)
 	{
 		Debug.Log("WE GOT METADATA: " + filename);
 		object[] meta_nodes = GameObject.FindObjectsOfType(typeof (SuperMetaNode));
@@ -67,6 +91,13 @@ internal sealed class SuperAssetImporter : AssetPostprocessor
 				if(node.autoUpdate)
 				{
 					Debug.Log("UPDATE METADATA FOR OBJECT " + node.gameObject.name + "(" + metadata_path + ")");
+					node.RemoveAllChildren();
+                
+	                SuperContainerConfig.RefreshClasses();
+	                SuperLabelConfig.RefreshAll();
+	                SuperSpriteConfig.RefreshClasses();
+	                
+	                node.ProcessMetadata();
 				}else{
 					Debug.Log("SKIP " + node.gameObject.name + ": autoUpdate false");
 				}

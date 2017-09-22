@@ -48,20 +48,16 @@ public class SuperContainerConfig : MonoBehaviour
 
         string name = (string)node["name"];
         string container_type = name.Split('_')[0];
-        Debug.Log("TESTING " + container_type);
+
         List<string> keys = new List<string>(containerClasses.Keys);
-        Debug.Log(String.Join(",", keys.ToArray()));
         if(containerClasses.ContainsKey(container_type))
         {
-            Debug.Log("USE A CUSTOM CLASS FOR " + container_type);
             object[] args = new object[3];
             args[0] = root_node;
             args[1] = parent;
             args[2] = node;
             containerClasses[container_type].GetMethod("ProcessNode").Invoke(null, args);
             return null;
-        }else{
-            Debug.Log(name + " IS A REGULAR CONTAINER");
         }
 
         switch(container_type)
@@ -182,7 +178,6 @@ public class SuperContainerConfig : MonoBehaviour
         containerClasses = new Dictionary<string, Type>();
         foreach(CustomClass custom_container in instance.customContainers)
         {
-            Debug.Log("CUSTOM CONTAINER: " + custom_container.prefix + " -> " + custom_container.scriptName);
             Type container_class = Type.GetType(custom_container.scriptName);
             if(container_class == null)
             {
