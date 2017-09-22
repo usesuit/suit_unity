@@ -46,7 +46,7 @@ public class SuperLabelConfig : MonoBehaviour
 
     //if we match bounds exactly the text doesn't render
     public const float TEXT_VERTICAL_PADDING = 2f;
-    public static SuperNode ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
+    public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
     {
         GameObject game_object = new GameObject();
         RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
@@ -118,7 +118,6 @@ public class SuperLabelConfig : MonoBehaviour
         super_label.transform.SetParent(parent);
         super_label.Reset();
 
-        return super_label;
     }
 
     public static void RefreshAll()

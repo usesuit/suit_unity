@@ -33,7 +33,7 @@ public class SuperSprite : SuperNode
                 Sprite sprite = rootNode.atlas.GetSprite(imageName);
                 Debug.Log(sprite);
                 Debug.Log("SPRITE: " + sprite);
-                Debug.Log("WIRING UP " + imageName);
+                Debug.Log("ASSIGNING " + imageName);
                 GetComponent<Image>().sprite = sprite;
             }else{
                 Debug.Log("no atlas");

@@ -41,15 +41,20 @@ public class SuperSpriteConfig : MonoBehaviour
         }
     }
 
-    public static SuperNode ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
+    public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
     {
-        GameObject game_object = new GameObject();
-        RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
-        SuperSprite sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
-        game_object.AddComponent(typeof(Image));
-
         string image_name = (string)node["name"];
         string image_type = image_name.Split('_')[0];
+
+        List<string> keys = new List<string>(spriteClasses.Keys);
+        if(spriteClasses.ContainsKey(image_type))
+        {
+            object[] args = new object[3];
+            args[0] = root_node;
+            args[1] = parent;
+            args[2] = node;
+            spriteClasses[image_type].GetMethod("ProcessNode").Invoke(null, args);
+        }
 
         if(spriteClasses.ContainsKey(image_type))
         {
@@ -57,6 +62,12 @@ public class SuperSpriteConfig : MonoBehaviour
             // spriteClasses[image_type].ProcessNode(root_node, parent, node);
             // return;
         }
+
+
+        GameObject game_object = new GameObject();
+        RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
+        SuperSprite sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
+        game_object.AddComponent(typeof(Image));
 
         sprite.name = image_name;
         sprite.assetPath = root_node.imagePath + "/" + image_name + ".png";
@@ -93,10 +104,9 @@ public class SuperSpriteConfig : MonoBehaviour
         sprite.cachedMetadata = node;
         sprite.rootNode = root_node;
 
-        sprite.transform.SetParent(parent);
-        sprite.Reset();
+        game_object.transform.SetParent(parent);
 
-        return sprite;
+        sprite.Reset();
     }
 
     public static void RefreshClasses()

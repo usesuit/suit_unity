@@ -21,7 +21,7 @@ public class SuperNode : MonoBehaviour
 		
 		if(!(resetX == float.MaxValue  || resetY == float.MaxValue))
 		{
-			rect_transform.localPosition = new Vector3(resetX, resetY, 0f);
+			rect_transform.anchoredPosition = new Vector3(resetX, resetY, 0f);
 		}
 
 	}

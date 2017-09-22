@@ -59,8 +59,7 @@ public class SuperMetaNodeEditor : Editor
                         
                         if(node_type == "container")
                         {
-                            string container_name = node_name.Replace("container_", "");
-                            cachedOptions.Add(container_name);
+                            cachedOptions.Add(node_name);
                         }
                     }
                 }
