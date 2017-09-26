@@ -64,7 +64,7 @@ public class SuperSpriteConfig : MonoBehaviour
         sprite.CreateRectTransform(game_object, node);
 
         sprite.name = image_name;
-        sprite.hierarchyDescription = "LABEL";
+        sprite.hierarchyDescription = "SPRITE";
         sprite.assetPath = root_node.imagePath + "/" + image_name + ".png";
         sprite.imageName = image_name;
 
