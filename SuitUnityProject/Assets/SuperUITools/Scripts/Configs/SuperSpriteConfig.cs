@@ -75,7 +75,7 @@ public class SuperSpriteConfig : MonoBehaviour
         sprite.cachedMetadata = node;
         sprite.rootNode = root_node;
         
-        root_node.sprites[image_name] = sprite;
+        root_node.spriteReferences.Add(new SpriteReference(image_name, sprite));
         game_object.transform.SetParent(parent);
         sprite.Reset();
 

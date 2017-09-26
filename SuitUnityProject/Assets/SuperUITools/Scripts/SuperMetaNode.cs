@@ -29,13 +29,19 @@ public class SuperMetaNode : SuperContainer
 	public float rootHeight;
 
 	// "primitives"
+	[HideInInspector]
 	public List<ContainerReference> containerReferences;
+	[HideInInspector]
 	public List<LabelReference> labelReferences;
+	[HideInInspector]
 	public List<SpriteReference> spriteReferences;
 
 	// "specials"
+	[HideInInspector]
 	public List<PlaceholderReference> placeholderReferences;
+	[HideInInspector]
 	public List<ButtonReference> buttonReferences;
+	[HideInInspector]
 	public List<ControlReference> controlReferences;
 
 
@@ -76,6 +82,7 @@ public class SuperMetaNode : SuperContainer
 		}
 		foreach(ButtonReference button in buttonReferences)
 		{
+			Debug.Log("ADDING BUTTON: " + button.name);
 			buttons[button.name] = button.button;
 		}
 		foreach(ControlReference control in controlReferences)
@@ -88,7 +95,7 @@ public class SuperMetaNode : SuperContainer
 	{
 
 	}
-	
+
 	void Update() 
 	{
 		
@@ -293,8 +300,9 @@ public class SuperMetaNode : SuperContainer
             use_atlas = false;
         }        
 
-        foreach(SuperSprite super_sprite in sprites.Values)
+        foreach(SpriteReference sprite_ref in spriteReferences)
         {
+        	SuperSprite super_sprite = sprite_ref.sprite;
             if(use_atlas)
             {
                 Sprite sprite = atlas.GetSprite(super_sprite.imageName);

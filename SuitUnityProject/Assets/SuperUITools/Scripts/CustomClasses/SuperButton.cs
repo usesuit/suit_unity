@@ -25,7 +25,7 @@ public class SuperButton : SuperButtonBase
         //A Button can have 4 states: Normal, Highlighted, Pressed, Disabled
         //A Button can also have extra junk that is just always there
 
-        string name = (string)node["name"];
+        string name = ((string)node["name"]).Replace("btn_","");
 
         GameObject game_object = new GameObject();
         SuperButton button = game_object.AddComponent(typeof(SuperButton)) as SuperButton;
@@ -52,8 +52,7 @@ public class SuperButton : SuperButtonBase
         button.rootNode = root_node;
         button.cachedMetadata = node;
 
-        string lookup = name.Replace("scalebtn_","");
-        root_node.buttons[lookup] = button;
+        root_node.buttonReferences.Add(new ButtonReference(name, button));
 
         game_object.transform.SetParent(parent);
         button.Reset();

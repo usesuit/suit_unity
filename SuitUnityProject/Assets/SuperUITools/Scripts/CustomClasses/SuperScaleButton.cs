@@ -32,17 +32,17 @@ public class SuperScaleButton : SuperButtonBase
 
         string node_type = (string)node["type"];
         string name = (string)node["name"];
+        string lookup = name.Replace("scalebtn_","");
 
         GameObject game_object = new GameObject();
         SuperScaleButton button = game_object.AddComponent(typeof(SuperScaleButton)) as SuperScaleButton;
 
         button.CreateRectTransform(game_object, node);
-        button.name = name;
+        button.name = lookup;
         button.rootNode = root_node;
         button.cachedMetadata = node;
 
-        string lookup = name.Replace("scalebtn_","");
-        root_node.buttons[lookup] = button;
+        root_node.buttonReferences.Add(new ButtonReference(lookup, button));
 
         game_object.transform.SetParent(parent);
         button.Reset();

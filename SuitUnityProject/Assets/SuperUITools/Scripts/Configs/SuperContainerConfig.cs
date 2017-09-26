@@ -61,9 +61,7 @@ public class SuperContainerConfig : MonoBehaviour
 
         container.CreateRectTransform(game_object, node);
 
-        Debug.Log("ADDING " + name + " TO root_node.containers");
         root_node.containerReferences.Add(new ContainerReference(name, container));
-        // root_node.containers[name] = container;
         container.name = name;
 
         container.cachedMetadata = node;

@@ -11,7 +11,9 @@ public class SuperNode : MonoBehaviour
 	[HideInInspector]
 	public SuperMetaNode rootNode;
 
+	[HideInInspector]
     public float resetX = float.MaxValue;
+    [HideInInspector]
 	public float resetY = float.MaxValue;
 
 	virtual public void Reset()
@@ -27,9 +29,9 @@ public class SuperNode : MonoBehaviour
 		
 		if(!(resetX == float.MaxValue  || resetY == float.MaxValue))
 		{
-			rect_transform.anchoredPosition = new Vector3(resetX, resetY, 0f);
+			rect_transform.anchoredPosition = new Vector2(resetX, resetY);
+			rect_transform.localPosition = new Vector3(rect_transform.localPosition.x, rect_transform.localPosition.y, 0f);
 		}
-
 	}
 
 	//even if we've been added to our game object, it seems like it takes a frame
