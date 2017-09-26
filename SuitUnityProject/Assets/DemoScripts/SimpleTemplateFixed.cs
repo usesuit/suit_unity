@@ -16,26 +16,18 @@ public class SimpleTemplateFixed : MonoBehaviour
 	//SET IN EDITOR
 	public Vector3 innerRotatorSpeed;
 
-	private bool isInitialized = false;
-
 	//Use this for local init, but anything depending on buttons/etc should be in an update
 	//that listens for SuperMetaNode.isInitialized
 	void Start () 
 	{
 		metaNode = GetComponent<SuperMetaNode>();
+		rotator = metaNode.Container("rotator").transform;
+		innerRotator = metaNode.Container("inner_rotator").transform;
 	}
 	
 	// Update is called once per frame
 	void Update () 
 	{
-		if(metaNode.isInitialized && !isInitialized)
-		{
-			Debug.Log("LETS DO IT");
-			rotator = metaNode.Container("rotator").transform;
-			innerRotator = metaNode.Container("inner_rotator").transform;
-			isInitialized = true;
-		}
-
 		if(rotator != null)
 		{
 			rotator.Rotate(rotatorSpeed);	

@@ -12,9 +12,6 @@ public class SuperMetaNode : SuperContainer
 
 	public TextAsset metadata;
 	public SpriteAtlas atlas;
-
-	[HideInInspector]
-	public bool isInitialized = false;
 	
 	[HideInInspector]
 	public String rootContainer;
@@ -50,8 +47,7 @@ public class SuperMetaNode : SuperContainer
 	public Dictionary<string, SuperButtonBase> buttons = new Dictionary<string, SuperButtonBase>();
 	public Dictionary<string, SuperNode> controls = new Dictionary<string, SuperNode>();
 	
-	// Use this for initialization
-	void Start () 
+	void Awake() 
 	{
 		containers = new Dictionary<string, SuperContainer>();
 		sprites = new Dictionary<string, SuperSprite>();
@@ -86,12 +82,14 @@ public class SuperMetaNode : SuperContainer
 		{
 			controls[control.name] = control.control;
 		}
-
-		isInitialized = true;
 	}
 
-	// Update is called once per frame
-	void Update () 
+	void Start()
+	{
+
+	}
+	
+	void Update() 
 	{
 		
 	}
