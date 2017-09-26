@@ -40,7 +40,8 @@ public class SuperScaleButton : SuperButtonBase
         button.rootNode = root_node;
         button.cachedMetadata = node;
 
-        root_node.buttons[name] = button;
+        string lookup = name.Replace("scalebtn_","");
+        root_node.buttons[lookup] = button;
 
         game_object.transform.SetParent(parent);
         button.Reset();
@@ -69,12 +70,12 @@ public class SuperScaleButton : SuperButtonBase
         Button uibutton = game_object.AddComponent(typeof(Button)) as Button;
         
         Animator animator = game_object.AddComponent(typeof(Animator)) as Animator;
-        string[] results = AssetDatabase.FindAssets("ScaleButton t:AnimatorController");
+        string[] results = AssetDatabase.FindAssets("SuperScaleButtonAnim t:AnimatorController");
         if(results.Length == 0)
         {
-            Debug.Log("[ERROR] could not find ScaleButton.controller for ScaleButton animation");
+            Debug.Log("[ERROR] could not find SuperScaleButtonAnim.controller for SuperScaleButton animation");
         }else if(results.Length > 1){
-            Debug.Log("[ERROR] more than one ScaleButton.controller was found. using the first one!");
+            Debug.Log("[ERROR] more than one SuperScaleButtonAnim.controller was found. using the first one!");
         }else{
             string guid = results[0];
             string path = AssetDatabase.GUIDToAssetPath(guid);

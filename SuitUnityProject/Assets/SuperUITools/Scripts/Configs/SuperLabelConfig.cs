@@ -53,7 +53,7 @@ public class SuperLabelConfig : MonoBehaviour
         super_label.CreateRectTransform(game_object, node);
 
         string name = (string)node["name"];
-        game_object.name = name;
+        game_object.name = "text_" + name; //having gameobject names be more verbose is helpful
 
         label.horizontalOverflow = HorizontalWrapMode.Overflow;
 
