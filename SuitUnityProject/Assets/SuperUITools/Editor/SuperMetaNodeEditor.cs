@@ -16,12 +16,6 @@ public class SuperMetaNodeEditor : Editor
     string cachedMetadata = null;
     List<String> cachedOptions = null;
 
-
-    public void OnValidate()
-    {
-        Debug.Log("VALUE");
-    }
-
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
@@ -32,8 +26,6 @@ public class SuperMetaNodeEditor : Editor
         {
             if(node.metadata.text != cachedMetadata)
             {
-                Debug.Log("[EDITOR] CONSTRUCT DROPDOWN");
-
                 cachedMetadata = node.metadata.text;
                 
                 var json = Json.Deserialize(node.metadata.text) as Dictionary<string,object>;

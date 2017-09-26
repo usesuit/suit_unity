@@ -17,7 +17,8 @@ public class SuperScaleButton : SuperButtonBase
 
     override public void HandleClick()
     {
-        Debug.Log("CLICK FOR REAL");
+        base.HandleClick();
+        //custom stuff?
     }
 
 	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)

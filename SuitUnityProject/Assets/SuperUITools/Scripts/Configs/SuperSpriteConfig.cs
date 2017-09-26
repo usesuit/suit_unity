@@ -49,7 +49,6 @@ public class SuperSpriteConfig : MonoBehaviour
         List<string> keys = new List<string>(spriteClasses.Keys);
         if(spriteClasses.ContainsKey(image_type))
         {
-            Debug.Log("USE CUSTOM SPRITE CLASS -> " + spriteClasses[image_type]);
             object[] args = new object[3];
             args[0] = root_node;
             args[1] = parent;

@@ -16,7 +16,7 @@ public class SuperSprite : SuperNode
 
     void Start () 
 	{
-		Debug.Log("STARTING SPRITE");
+		
 	}
 
     //this used to hot-swap in Start from a direct image assignment,

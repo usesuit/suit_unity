@@ -41,7 +41,7 @@ public class SuperMetaNode : SuperContainer
 	// Use this for initialization
 	void Start () 
 	{
-		Debug.Log("START START START");
+		
 	}
 
 	// Update is called once per frame
@@ -55,11 +55,6 @@ public class SuperMetaNode : SuperContainer
 
 
 	//EDITOR METHODS
-	public void OnValidate()
-	{
-		// Debug.Log("INSTANCE VALIDATE");
-	}
-
 	public void RemoveAllChildren()
 	{
 		Transform transform = GetComponent<Transform>();
@@ -99,7 +94,6 @@ public class SuperMetaNode : SuperContainer
             {
             	ProcessChildren(transform, json["children"] as List<object>);
             }else{
-            	Debug.Log("CONSTRUCT A CHILD NODE");
                 bool got_one = false;
                 List<object> children = json["children"] as List<object>;
                 for(int i = 0; i < children.Count; i++)
@@ -107,11 +101,9 @@ public class SuperMetaNode : SuperContainer
                     Dictionary<string,object> raw_node = children[i] as Dictionary<string,object>;
                     string node_type = (string)raw_node["type"];
                     string node_name = (string)raw_node["name"];
-                    Debug.Log("COMPARING " + node_name + " to " + rootContainer);
 
                     if(node_type == "container" && node_name == rootContainer)
                     {
-                    	Debug.Log("GOT ONE");
                     	got_one = true;
                     	List<object> node_children = raw_node["children"] as List<object>;
                     	ProcessChildren(transform, raw_node["children"] as List<object>);
@@ -126,7 +118,6 @@ public class SuperMetaNode : SuperContainer
             }
         }
 
-        Debug.Log("POST PROCESS SPRITES");
         PostProcessSprites();
 	}
 
@@ -237,7 +228,6 @@ public class SuperMetaNode : SuperContainer
             use_atlas = false;
         }        
 
-        Debug.Log("WIRING UP SPRITES FOR " + gameObject.name);
         foreach(SuperSprite super_sprite in sprites.Values)
         {
             if(use_atlas)

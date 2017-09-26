@@ -16,7 +16,8 @@ public class SuperButton : SuperButtonBase
 {
     override public void HandleClick()
     {
-        Debug.Log("CLICK FOR REAL");
+    	base.HandleClick();
+    	//custom stuff?
     }
 
 	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
@@ -109,8 +110,6 @@ public class SuperButton : SuperButtonBase
 
         	string[] pieces = child.name.Split('_');
         	string tag = pieces[pieces.Length -1];
-
-        	Debug.Log(child.name + " TAG = " + tag);
 
         	if(tag == "up")
         	{
