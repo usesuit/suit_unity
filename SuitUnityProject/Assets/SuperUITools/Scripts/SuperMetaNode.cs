@@ -12,6 +12,9 @@ public class SuperMetaNode : SuperContainer
 
 	public TextAsset metadata;
 	public SpriteAtlas atlas;
+
+	[HideInInspector]
+	public bool isInitialized = false;
 	
 	[HideInInspector]
 	public String rootContainer;
@@ -28,7 +31,16 @@ public class SuperMetaNode : SuperContainer
 	public float rootWidth;
 	public float rootHeight;
 
-	//TODO: button MODAL
+	// "primitives"
+	public List<ContainerReference> containerReferences;
+	public List<LabelReference> labelReferences;
+	public List<SpriteReference> spriteReferences;
+
+	// "specials"
+	public List<PlaceholderReference> placeholderReferences;
+	public List<ButtonReference> buttonReferences;
+	public List<ControlReference> controlReferences;
+
 
 	public Dictionary<string, SuperContainer> containers = new Dictionary<string, SuperContainer>();
 	public Dictionary<string,SuperLabel> labels = new Dictionary<string, SuperLabel>();
@@ -41,7 +53,41 @@ public class SuperMetaNode : SuperContainer
 	// Use this for initialization
 	void Start () 
 	{
-		
+		containers = new Dictionary<string, SuperContainer>();
+		sprites = new Dictionary<string, SuperSprite>();
+		labels = new Dictionary<string, SuperLabel>();
+
+		placeholders = new Dictionary<string, Rect>();
+		buttons = new Dictionary<string, SuperButtonBase>();
+		controls = new Dictionary<string, SuperNode>();
+
+		foreach(ContainerReference container in containerReferences)
+		{
+			Debug.Log("ADDING " + container.name);
+			containers[container.name] = container.container;
+		}
+		foreach(LabelReference label in labelReferences)
+		{
+			labels[label.name] = label.label;
+		}
+		foreach(SpriteReference sprite in spriteReferences)
+		{
+			sprites[sprite.name] = sprite.sprite;
+		}
+		foreach(PlaceholderReference ph in placeholderReferences)
+		{
+			placeholders[ph.name] = ph.rect;
+		}
+		foreach(ButtonReference button in buttonReferences)
+		{
+			buttons[button.name] = button.button;
+		}
+		foreach(ControlReference control in controlReferences)
+		{
+			controls[control.name] = control.control;
+		}
+
+		isInitialized = true;
 	}
 
 	// Update is called once per frame
@@ -49,6 +95,28 @@ public class SuperMetaNode : SuperContainer
 	{
 		
 	}
+
+	public SuperContainer Container(string name)
+	{
+		if(!containers.ContainsKey(name))
+		{
+			Debug.Log("[ERROR] Invalid CONTAINER... TRY:");
+			foreach(string key in containers.Keys)
+			{
+				Debug.Log("      " + key);
+			}
+		}
+		return containers[name];
+	}
+
+	// public SuperLabel Label(string name)
+	// {
+
+	// }
+
+
+
+
 
 
 
@@ -77,14 +145,13 @@ public class SuperMetaNode : SuperContainer
             return;
         }
 
+        containerReferences = new List<ContainerReference>();
+		labelReferences = new List<LabelReference>();
+		spriteReferences = new List<SpriteReference>();
 
-        containers = new Dictionary<string, SuperContainer>();
-		sprites = new Dictionary<string, SuperSprite>();
-		labels = new Dictionary<string, SuperLabel>();
-
-		placeholders = new Dictionary<string, Rect>();
-		buttons = new Dictionary<string, SuperButtonBase>();
-		controls = new Dictionary<string, SuperNode>();
+		placeholderReferences = new List<PlaceholderReference>();
+		buttonReferences = new List<ButtonReference>();
+		controlReferences = new List<ControlReference>();
 
         var json = Json.Deserialize(metadata.text) as Dictionary<string,object>;
 

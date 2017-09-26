@@ -47,8 +47,7 @@ internal sealed class SuperAssetImporter : AssetPostprocessor
     	foreach (var method in type.GetMethods())
         {
             var parameters = method.GetParameters();
-            var parameterDescriptions = string.Join
-                (", ", method.GetParameters()
+            var parameterDescriptions = string.Join(", ", method.GetParameters()
                              .Select(x => x.ParameterType + " " + x.Name)
                              .ToArray());
 

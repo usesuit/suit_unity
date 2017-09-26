@@ -95,7 +95,8 @@ public class SuperLabelConfig : MonoBehaviour
         super_label.cachedMetadata = node;
         super_label.rootNode = root_node;
 
-        root_node.labels[name] = super_label;
+        root_node.labelReferences.Add(new LabelReference(name, super_label));
+        // root_node.labels[name] = super_label;
 
         super_label.transform.SetParent(parent);
         super_label.Reset();

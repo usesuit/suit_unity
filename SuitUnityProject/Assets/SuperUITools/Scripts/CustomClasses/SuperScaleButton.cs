@@ -62,7 +62,8 @@ public class SuperScaleButton : SuperButtonBase
             sprite.resetX = button.resetX;
             sprite.resetY = button.resetY;
 
-            root_node.sprites[name] = sprite;
+            root_node.spriteReferences.Add(new SpriteReference(name, sprite));
+            // root_node.sprites[name] = sprite;
             game_object.transform.SetParent(parent);
 
             sprite.Reset();
