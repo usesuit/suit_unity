@@ -16,6 +16,9 @@ public class SuperNode : MonoBehaviour
     [HideInInspector]
 	public float resetY = float.MaxValue;
 
+	[HideInInspector]
+	public string hierarchyDescription = "";
+
 	virtual public void Reset()
 	{
 		RectTransform rect_transform = GetComponent<RectTransform>();

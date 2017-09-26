@@ -63,6 +63,7 @@ public class SuperContainerConfig : MonoBehaviour
 
         root_node.containerReferences.Add(new ContainerReference(name, container));
         container.name = name;
+        container.hierarchyDescription = "CONTAINER";
 
         container.cachedMetadata = node;
         container.rootNode = root_node;

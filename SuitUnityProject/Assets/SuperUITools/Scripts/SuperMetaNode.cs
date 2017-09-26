@@ -150,6 +150,8 @@ public class SuperMetaNode : SuperContainer
             return;
         }
 
+        hierarchyDescription = "ROOT";
+
         containerReferences = new List<ContainerReference>();
 		labelReferences = new List<LabelReference>();
 		spriteReferences = new List<SpriteReference>();

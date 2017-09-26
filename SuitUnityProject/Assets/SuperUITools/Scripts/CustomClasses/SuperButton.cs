@@ -51,6 +51,7 @@ public class SuperButton : SuperButtonBase
         button.name = name;
         button.rootNode = root_node;
         button.cachedMetadata = node;
+        button.hierarchyDescription = "BUTTON";
 
         root_node.buttonReferences.Add(new ButtonReference(name, button));
 

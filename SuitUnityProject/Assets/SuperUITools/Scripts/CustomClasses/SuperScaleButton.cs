@@ -41,6 +41,7 @@ public class SuperScaleButton : SuperButtonBase
         button.name = lookup;
         button.rootNode = root_node;
         button.cachedMetadata = node;
+        button.hierarchyDescription = "BUTTON";
 
         root_node.buttonReferences.Add(new ButtonReference(lookup, button));
 

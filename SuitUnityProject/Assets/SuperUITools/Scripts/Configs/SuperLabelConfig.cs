@@ -54,6 +54,7 @@ public class SuperLabelConfig : MonoBehaviour
 
         string name = (string)node["name"];
         game_object.name = name;
+        super_label.hierarchyDescription = "LABEL";
 
         label.horizontalOverflow = HorizontalWrapMode.Overflow;
 
