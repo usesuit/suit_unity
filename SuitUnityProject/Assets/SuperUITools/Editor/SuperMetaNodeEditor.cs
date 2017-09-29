@@ -93,8 +93,6 @@ public class SuperMetaNodeEditor : Editor
 
             if(GUILayout.Button("Update Node"))
             {
-				node.RemoveAllChildren();
-                
                 SuperContainerConfig.RefreshClasses();
                 SuperLabelConfig.RefreshAll();
                 SuperSpriteConfig.RefreshClasses();

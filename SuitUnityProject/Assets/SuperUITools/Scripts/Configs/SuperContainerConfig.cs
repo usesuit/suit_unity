@@ -45,7 +45,6 @@ public class SuperContainerConfig : MonoBehaviour
         string name = (string)node["name"];
         string container_type = name.Split('_')[0];
 
-        List<string> keys = new List<string>(containerClasses.Keys);
         if(containerClasses.ContainsKey(container_type))
         {
             object[] args = new object[3];

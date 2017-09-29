@@ -5,5 +5,5 @@ using UnityEngine;
 public class SuperScale9Sprite : SuperContainerBase 
 {
 
-
+	
 }

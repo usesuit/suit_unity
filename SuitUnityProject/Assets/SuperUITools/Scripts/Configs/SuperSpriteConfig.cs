@@ -46,7 +46,6 @@ public class SuperSpriteConfig : MonoBehaviour
         string image_name = (string)node["name"];
         string image_type = image_name.Split('_')[0];
 
-        List<string> keys = new List<string>(spriteClasses.Keys);
         if(spriteClasses.ContainsKey(image_type))
         {
             object[] args = new object[3];

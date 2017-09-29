@@ -2,7 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+
 using UnityEngine;
+
 using UnityEditor;  // Most of the utilities we are going to use are contained in the UnityEditor namespace
 using UnityEngine.UI;
 using UnityEngine.U2D;
@@ -52,6 +54,9 @@ public class SuperMetaNode : SuperContainer
 	public Dictionary<string, Rect> placeholders = new Dictionary<string, Rect>();
 	public Dictionary<string, SuperButtonBase> buttons = new Dictionary<string, SuperButtonBase>();
 	public Dictionary<string, SuperNode> controls = new Dictionary<string, SuperNode>();
+
+	//when updating metadata, try to keep the old objects so we preserve references
+	public Dictionary<string, GameObject> editorObjectCache = new Dictionary<string,GameObject>();
 	
 	void Awake() 
 	{
@@ -128,14 +133,60 @@ public class SuperMetaNode : SuperContainer
 
 
 	//EDITOR METHODS
-	public void RemoveAllChildren()
+	public void ClearEditorCache()
 	{
+		List<GameObject> leftovers = new List<GameObject>();
+		foreach(GameObject node in editorObjectCache.Values)
+		{
+			leftovers.Add(node);
+		}
+		DestroyAll(leftovers);
+		editorObjectCache = new Dictionary<string,GameObject>();
+	}
+
+	public void RemoveAndCacheAllChildren()
+	{
+		ClearEditorCache();
+
 		Transform transform = GetComponent<Transform>();
-		List<GameObject> kill_list = new List<GameObject>();
+		List<GameObject> abandon_list = new List<GameObject>();
 		foreach(Transform child in transform)
 		{
-			kill_list.Add(child.gameObject);
+			abandon_list.Add(child.gameObject);
 		}
+
+		HashSet<string> duplicate_keys = new HashSet<string>();
+		foreach(GameObject go in abandon_list)
+		{
+			go.transform.SetParent(null);
+
+			if(editorObjectCache.ContainsKey(go.name))
+			{
+				duplicate_keys.Add(go.name);
+				editorObjectCache.Remove(go.name);
+				continue;
+			}
+
+			if(duplicate_keys.Contains(go.name))
+			{
+				continue;
+			}
+
+			editorObjectCache[go.name] = go;
+		}
+
+		if(duplicate_keys.Count > 0)
+		{
+			Debug.Log("[WARNING] UNABLE TO USE EDITOR CACHE FOR DUPLCIATE KEYS");
+			foreach(string key in duplicate_keys)
+			{
+				Debug.Log("     -> " + key);
+			}	
+		}
+	}
+
+	public void DestroyAll(List<GameObject> kill_list)
+	{
 		foreach(GameObject go in kill_list)
 		{
 			DestroyImmediate(go);
@@ -149,6 +200,8 @@ public class SuperMetaNode : SuperContainer
             Debug.Log("NO METADATA");
             return;
         }
+
+        RemoveAndCacheAllChildren();
 
         hierarchyDescription = "ROOT";
 
@@ -179,7 +232,6 @@ public class SuperMetaNode : SuperContainer
                     if(node_type == "container" && node_name == rootContainer)
                     {
                     	got_one = true;
-                    	List<object> node_children = raw_node["children"] as List<object>;
                     	ProcessChildren(transform, raw_node["children"] as List<object>);
                         break;
                     }
@@ -193,6 +245,7 @@ public class SuperMetaNode : SuperContainer
         }
 
         PostProcessSprites();
+        ClearEditorCache();
 	}
 
 	// this one is weird... ideally i'd like to move it out of SuperMetaNode since

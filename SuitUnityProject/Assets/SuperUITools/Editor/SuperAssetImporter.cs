@@ -46,7 +46,6 @@ internal sealed class SuperAssetImporter : AssetPostprocessor
     {
     	foreach (var method in type.GetMethods())
         {
-            var parameters = method.GetParameters();
             var parameterDescriptions = string.Join(", ", method.GetParameters()
                              .Select(x => x.ParameterType + " " + x.Name)
                              .ToArray());
@@ -90,8 +89,6 @@ internal sealed class SuperAssetImporter : AssetPostprocessor
 				if(node.autoUpdate)
 				{
 					Debug.Log("UPDATE METADATA FOR OBJECT " + node.gameObject.name + "(" + metadata_path + ")");
-					node.RemoveAllChildren();
-                
 	                SuperContainerConfig.RefreshClasses();
 	                SuperLabelConfig.RefreshAll();
 	                SuperSpriteConfig.RefreshClasses();
