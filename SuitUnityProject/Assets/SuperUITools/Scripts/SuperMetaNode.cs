@@ -147,14 +147,38 @@ public class SuperMetaNode : SuperContainer
 	public void RemoveAndCacheAllChildren()
 	{
 		ClearEditorCache();
-		HashSet<string> duplicate_keys = new HashSet<string>();
-
-		//STEP 1
-		//unparent all SuperNodes
+		
+		//recursively loop through the whole tree and get all the SuperNodes
 		List<SuperNode> master_list = new List<SuperNode>();
-		Transform transform = GetComponent<Transform>();
+		RecursivelyCollectSuperNodes(transform, master_list);
 
 
+		//unparent everything and kill any duplicates		
+		HashSet<string> duplicate_keys = new HashSet<string>();
+		foreach(SuperNode node in master_list)
+		{
+			node.transform.SetParent(null);
+
+			if(editorObjectCache.ContainsKey(node.name))
+			{
+				duplicate_keys.Add(node.name);
+
+				GameObject dupe = editorObjectCache[node.name];
+				editorObjectCache.Remove(node.name);
+
+				DestroyImmediate(dupe);
+				DestroyImmediate(node.gameObject);
+				continue;
+			}
+
+			if(duplicate_keys.Contains(node.name))
+			{
+				DestroyImmediate(node.gameObject);
+				continue;
+			}
+
+			editorObjectCache[node.name] = node.gameObject;
+		}
 
 		if(duplicate_keys.Count > 0)
 		{
@@ -166,44 +190,24 @@ public class SuperMetaNode : SuperContainer
 		}
 	}
 
+	public void RecursivelyCollectSuperNodes(Transform transform, List<SuperNode> working)
+	{
+		if(transform.childCount == 0)
+		{
+			return;
+		}
 
-
-	public void RemoveAndCacheAllChildrenOfNode(GameObject node, HashSet<string> duplicate_keys)
-	{	
-		List<GameObject> abandon_list = new List<GameObject>();
 		foreach(Transform child in transform)
 		{
-			abandon_list.Add(child.gameObject);
-		}
+			RecursivelyCollectSuperNodes(child, working);
 
-		
-		foreach(GameObject go in abandon_list)
-		{
-			go.transform.SetParent(null);
-
-			if(editorObjectCache.ContainsKey(go.name))
+			SuperNode node = child.gameObject.GetComponent<SuperNode>();
+			if(node != null)
 			{
-				duplicate_keys.Add(go.name);
-
-				GameObject dupe = editorObjectCache[go.name];
-
-				editorObjectCache.Remove(go.name);
-				DestroyImmediate(dupe);
-				DestroyImmediate(go);
-				continue;
+				working.Add(node);
 			}
-
-			if(duplicate_keys.Contains(go.name))
-			{
-				DestroyImmediate(go);
-				continue;
-			}
-
-			editorObjectCache[go.name] = go;
 		}
 	}
-
-
 
 	public void DestroyAll(List<GameObject> kill_list)
 	{
