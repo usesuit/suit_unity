@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SimpleTemplateFixed : MonoBehaviour 
+//If you'd rather go code-first instead of editor-first, here's an example of how to 
+//wire up and access things during the Start function
+public class SimpleTemplateALternate : MonoBehaviour 
 {
 	[HideInInspector]
 	public Transform rotator;
