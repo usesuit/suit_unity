@@ -14,38 +14,38 @@ using UnityEngine.U2D;
 
 public class SuperButton : SuperButtonBase
 {
+    public GameObject upStateGO;
+    public GameObject highlightedStateGO;
+    public GameObject pressedStateGO;
+    public GameObject disabledStateGO;
+
     override public void HandleClick()
     {
     	base.HandleClick();
     	//custom stuff?
     }
 
-	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
+    //Custom classes don't need to create a ProcessNode that doesn't take maybe_recycled_node, since
+    //the only way to get here is through the Container/Label/Sprite configs passing it through
+	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node, GameObject maybe_recycled_node)
     {
-        //A Button can have 4 states: Normal, Highlighted, Pressed, Disabled
-        //A Button can also have extra junk that is just always there
+        string name = (string)node["name"];
+        string lookup = name.Replace("btn_","");
 
-        string name = ((string)node["name"]).Replace("btn_","");
+        GameObject game_object = maybe_recycled_node;
+        SuperButton button = null;
+        if(game_object == null)
+        {
+            game_object = new GameObject();
+            button = game_object.AddComponent(typeof(SuperButton)) as SuperButton;
 
-        GameObject game_object = new GameObject();
-        SuperButton button = game_object.AddComponent(typeof(SuperButton)) as SuperButton;
+            button.createAnimation();
+        }else{
+            button = game_object.GetComponent<SuperButton>();
 
-        GameObject up_state = new GameObject();
-        up_state.name = "UpState";
-        up_state.transform.SetParent(game_object.transform);
-
-        GameObject highlighted_state = new GameObject();
-        highlighted_state.name = "HighlightedState";
-        highlighted_state.transform.SetParent(game_object.transform);
-
-        GameObject pressed_state = new GameObject();
-        pressed_state.name = "PressedState";
-        pressed_state.transform.SetParent(game_object.transform);
-
-        GameObject disabled_state = new GameObject();
-        disabled_state.name = "DisabledState";
-        disabled_state.transform.SetParent(game_object.transform);
-
+            //TODO: should probably verify that we still have our UpState/HighlightedState/PressedState/DisabledState
+            //but for now just assume we're not changing classes
+        }
 
         button.CreateRectTransform(game_object, node);
         button.name = name;
@@ -53,16 +53,94 @@ public class SuperButton : SuperButtonBase
         button.cachedMetadata = node;
         button.hierarchyDescription = "BUTTON";
 
-        root_node.buttonReferences.Add(new ButtonReference(name, button));
+        root_node.buttonReferences.Add(new ButtonReference(lookup, button));
 
         game_object.transform.SetParent(parent);
         button.Reset();
 
+        //image nodes don't have children
+        if(node.ContainsKey("children"))
+        {
+            root_node.ProcessChildren(game_object.transform, node["children"] as List<object>);
+        }
 
+        //we post process our children into our state objects so they can turn on/off correctly
+        button.sortChildren();
+    }
 
-        Button uibutton = game_object.AddComponent(typeof(Button)) as Button;
-        
-        Animator animator = game_object.AddComponent(typeof(Animator)) as Animator;
+    public void sortChildren()
+    {
+        Button uibutton = GetComponent<Button>();
+
+        Transform child;
+        bool has_highlight = false;
+        for(var i = 0; i < gameObject.transform.childCount; i++)
+        {
+            child = gameObject.transform.GetChild(i);
+            
+            if(child.gameObject == upStateGO || child.gameObject == highlightedStateGO || child.gameObject == pressedStateGO || child.gameObject == disabledStateGO)
+            {
+                continue;
+            }
+
+            string[] pieces = child.name.Split('_');
+            string tag = pieces[pieces.Length -1];
+
+            if(tag == "up")
+            {
+                //by convention all the "up" stuff is grouped together, so this shoooouuuuuld
+                //roughly preserver the draw order of any extra doodads like backgrounds/text
+                upStateGO.transform.SetSiblingIndex(i);
+                child.SetParent(upStateGO.transform);
+                i--;
+            }else if(tag == "down"){
+                pressedStateGO.transform.SetSiblingIndex(i);
+                child.SetParent(pressedStateGO.transform);
+                i--;
+            }else if(tag == "over"){
+                highlightedStateGO.transform.SetSiblingIndex(i);
+                child.SetParent(highlightedStateGO.transform);
+                has_highlight = true;
+                i--;
+            }else if(tag == "disabled"){
+                disabledStateGO.transform.SetSiblingIndex(i);
+                child.SetParent(disabledStateGO.transform);
+                i--;
+            }
+        }
+
+        //we don't force you to have a highlighted + disabled state (especially for mobile)
+        //the disabled state is easy... just don't disable the button if the state is missing.
+        //for highlighted, just re-use the normal state if there's no highlighted state
+        if(!has_highlight)
+        {
+            uibutton.animationTriggers.highlightedTrigger = uibutton.animationTriggers.normalTrigger;
+        }
+    }
+
+    public void createAnimation()
+    {
+        //A Button can have 4 states: Normal, Highlighted, Pressed, Disabled
+        //A Button can also have extra junk that is just always there
+        upStateGO = new GameObject();
+        upStateGO.name = "UpState";
+        upStateGO.transform.SetParent(gameObject.transform);
+
+        highlightedStateGO = new GameObject();
+        highlightedStateGO.name = "HighlightedState";
+        highlightedStateGO.transform.SetParent(gameObject.transform);
+
+        pressedStateGO = new GameObject();
+        pressedStateGO.name = "PressedState";
+        pressedStateGO.transform.SetParent(gameObject.transform);
+
+        disabledStateGO = new GameObject();
+        disabledStateGO.name = "DisabledState";
+        disabledStateGO.transform.SetParent(gameObject.transform);
+
+        Button uibutton = gameObject.AddComponent(typeof(Button)) as Button;
+        Animator animator = gameObject.AddComponent(typeof(Animator)) as Animator;
+
         string[] results = AssetDatabase.FindAssets("SuperButtonAnim t:AnimatorController");
         if(results.Length == 0)
         {
@@ -84,63 +162,9 @@ public class SuperButton : SuperButtonBase
         none.mode = Navigation.Mode.None;
         uibutton.navigation = none;
 
-        
         //Wire up the listener in the editor
-        MethodInfo method_info = UnityEventBase.GetValidMethodInfo(button, "HandleClick", new Type[]{});
-        UnityAction method_delegate = System.Delegate.CreateDelegate(typeof(UnityAction), button, method_info) as UnityAction;
+        MethodInfo method_info = UnityEventBase.GetValidMethodInfo(this, "HandleClick", new Type[]{});
+        UnityAction method_delegate = System.Delegate.CreateDelegate(typeof(UnityAction), this, method_info) as UnityAction;
         UnityEventTools.AddPersistentListener(uibutton.onClick, method_delegate);
-
-
-        //image nodes don't have children
-        if(node.ContainsKey("children"))
-        {
-            root_node.ProcessChildren(game_object.transform, node["children"] as List<object>);
-        }
-
-        Transform child;
-        bool has_highlight = false;
-        for(var i = 0; i < game_object.transform.childCount; i++)
-        {
-        	child = game_object.transform.GetChild(i);
-        	
-        	if(child.gameObject == up_state || child.gameObject == highlighted_state || child.gameObject == pressed_state || child.gameObject == disabled_state)
-        	{
-        		continue;
-        	}
-
-        	string[] pieces = child.name.Split('_');
-        	string tag = pieces[pieces.Length -1];
-
-        	if(tag == "up")
-        	{
-        		//by convention all the "up" stuff is grouped together, so this shoooouuuuuld
-        		//roughly preserver the draw order of any extra doodads like backgrounds/text
-        		up_state.transform.SetSiblingIndex(i);
-        		child.SetParent(up_state.transform);
-        		i--;
-        	}else if(tag == "down"){
-        		pressed_state.transform.SetSiblingIndex(i);
-        		child.SetParent(pressed_state.transform);
-        		i--;
-        	}else if(tag == "over"){
-        		highlighted_state.transform.SetSiblingIndex(i);
-        		child.SetParent(highlighted_state.transform);
-        		has_highlight = true;
-        		i--;
-        	}else if(tag == "disabled"){
-        		disabled_state.transform.SetSiblingIndex(i);
-        		child.SetParent(disabled_state.transform);
-        		i--;
-        	}
-        }
-
-        //we don't force you to have a highlighted + disabled state (especially for mobile)
-        //the disabled state is easy... just don't disable the button if the state is missing.
-        //for highlighted, just re-use the normal state if there's no highlighted state
-        if(!has_highlight)
-        {
-        	uibutton.animationTriggers.highlightedTrigger = uibutton.animationTriggers.normalTrigger;
-        }
-
     }
 }

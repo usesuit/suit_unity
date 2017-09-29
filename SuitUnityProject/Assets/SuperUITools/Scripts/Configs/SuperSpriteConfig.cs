@@ -43,22 +43,36 @@ public class SuperSpriteConfig : MonoBehaviour
 
     public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
     {
+        ProcessNode(root_node, parent, node, null);
+    }
+
+    public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node, GameObject maybe_recycled_node)
+    {
         string image_name = (string)node["name"];
         string image_type = image_name.Split('_')[0];
 
         if(spriteClasses.ContainsKey(image_type))
         {
-            object[] args = new object[3];
+            object[] args = new object[4];
             args[0] = root_node;
             args[1] = parent;
             args[2] = node;
+            args[3] = maybe_recycled_node;
             spriteClasses[image_type].GetMethod("ProcessNode").Invoke(null, args);
             return;
         }
 
-        GameObject game_object = new GameObject();
-        SuperSprite sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
-        game_object.AddComponent(typeof(Image));
+        GameObject game_object = maybe_recycled_node;
+        SuperSprite sprite = null;
+        if(game_object == null)
+        {
+            game_object = new GameObject();
+            game_object.AddComponent(typeof(Image));
+
+            sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
+        }else{
+            sprite = game_object.GetComponent<SuperSprite>();
+        }
 
         sprite.CreateRectTransform(game_object, node);
 
@@ -78,9 +92,6 @@ public class SuperSpriteConfig : MonoBehaviour
         root_node.spriteReferences.Add(new SpriteReference(image_name, sprite));
         game_object.transform.SetParent(parent);
         sprite.Reset();
-
-        //TODO: think about setting NotEditable on all generated nodes...
-        // game_object.hideFlags |= HideFlags.NotEditable;
     }
 
     public static void RefreshClasses()

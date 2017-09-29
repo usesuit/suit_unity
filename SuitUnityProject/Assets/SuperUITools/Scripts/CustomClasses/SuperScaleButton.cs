@@ -21,21 +21,29 @@ public class SuperScaleButton : SuperButtonBase
         //custom stuff?
     }
 
-	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
+    //SuperScaleButton takes two inputs:
+    //  a contaner named scalebtn_
+    //  a single sprite named scalebtn_
+    //  the end result is the same!
+    //  but if we're just an image... let's fake being an image inside a container
+	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node, GameObject maybe_recycled_node)
     {
-        //SuperScaleButton takes two inputs:
-        //  a contaner named scalebtn_
-        //  a single sprite named scalebtn_
-        //  the end result is the same!
-        //  but if we're just an image... let's fake being an image inside a container
-
-
         string node_type = (string)node["type"];
         string name = (string)node["name"];
         string lookup = name.Replace("scalebtn_","");
 
-        GameObject game_object = new GameObject();
-        SuperScaleButton button = game_object.AddComponent(typeof(SuperScaleButton)) as SuperScaleButton;
+        GameObject game_object = maybe_recycled_node;
+        SuperScaleButton button = null;
+        if(game_object == null)
+        {
+            game_object = new GameObject();
+            button = game_object.AddComponent(typeof(SuperScaleButton)) as SuperScaleButton;
+            button.createAnimation();
+        }else{
+            button = game_object.GetComponent<SuperScaleButton>();
+            //TODO: should probably verify that our animation is still set up properly
+            //but for now just assume we're not changing classes
+        }
 
         button.CreateRectTransform(game_object, node);
         button.name = lookup;
@@ -50,8 +58,12 @@ public class SuperScaleButton : SuperButtonBase
 
         if(node_type == "image")
         {
-            SuperSprite sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
-            game_object.AddComponent(typeof(Image));
+            SuperSprite sprite = game_object.GetComponent<SuperSprite>();
+            if(sprite == null)
+            {
+                sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
+                game_object.AddComponent(typeof(Image));
+            }
 
             sprite.name = name;
             sprite.rootNode = root_node;
@@ -70,9 +82,18 @@ public class SuperScaleButton : SuperButtonBase
             sprite.Reset();
         }
 
-        Button uibutton = game_object.AddComponent(typeof(Button)) as Button;
-        
-        Animator animator = game_object.AddComponent(typeof(Animator)) as Animator;
+        //image nodes don't have children
+        if(node.ContainsKey("children"))
+        {
+            root_node.ProcessChildren(game_object.transform, node["children"] as List<object>);
+        }
+    }
+
+    public void createAnimation()
+    {
+        Button uibutton = gameObject.AddComponent(typeof(Button)) as Button;
+        Animator animator = gameObject.AddComponent(typeof(Animator)) as Animator;
+
         string[] results = AssetDatabase.FindAssets("SuperScaleButtonAnim t:AnimatorController");
         if(results.Length == 0)
         {
@@ -86,8 +107,6 @@ public class SuperScaleButton : SuperButtonBase
             AnimatorController scale_anim = (AnimatorController)AssetDatabase.LoadAssetAtPath(path, typeof(AnimatorController));
             animator.runtimeAnimatorController = scale_anim;
         }
-        
-
 
         uibutton.transition = Selectable.Transition.Animation;
 
@@ -98,15 +117,8 @@ public class SuperScaleButton : SuperButtonBase
 
         
         //Wire up the listener in the editor
-        MethodInfo method_info = UnityEventBase.GetValidMethodInfo(button, "HandleClick", new Type[]{});
-        UnityAction method_delegate = System.Delegate.CreateDelegate(typeof(UnityAction), button, method_info) as UnityAction;
+        MethodInfo method_info = UnityEventBase.GetValidMethodInfo(this, "HandleClick", new Type[]{});
+        UnityAction method_delegate = System.Delegate.CreateDelegate(typeof(UnityAction), this, method_info) as UnityAction;
         UnityEventTools.AddPersistentListener(uibutton.onClick, method_delegate);
-
-
-        //image nodes don't have children
-        if(node.ContainsKey("children"))
-        {
-            root_node.ProcessChildren(game_object.transform, node["children"] as List<object>);
-        }
     }
 }
