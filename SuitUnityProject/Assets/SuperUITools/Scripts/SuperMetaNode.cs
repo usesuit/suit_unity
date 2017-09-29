@@ -147,33 +147,14 @@ public class SuperMetaNode : SuperContainer
 	public void RemoveAndCacheAllChildren()
 	{
 		ClearEditorCache();
-
-		Transform transform = GetComponent<Transform>();
-		List<GameObject> abandon_list = new List<GameObject>();
-		foreach(Transform child in transform)
-		{
-			abandon_list.Add(child.gameObject);
-		}
-
 		HashSet<string> duplicate_keys = new HashSet<string>();
-		foreach(GameObject go in abandon_list)
-		{
-			go.transform.SetParent(null);
 
-			if(editorObjectCache.ContainsKey(go.name))
-			{
-				duplicate_keys.Add(go.name);
-				editorObjectCache.Remove(go.name);
-				continue;
-			}
+		//STEP 1
+		//unparent all SuperNodes
+		List<SuperNode> master_list = new List<SuperNode>();
+		Transform transform = GetComponent<Transform>();
 
-			if(duplicate_keys.Contains(go.name))
-			{
-				continue;
-			}
 
-			editorObjectCache[go.name] = go;
-		}
 
 		if(duplicate_keys.Count > 0)
 		{
@@ -184,6 +165,45 @@ public class SuperMetaNode : SuperContainer
 			}	
 		}
 	}
+
+
+
+	public void RemoveAndCacheAllChildrenOfNode(GameObject node, HashSet<string> duplicate_keys)
+	{	
+		List<GameObject> abandon_list = new List<GameObject>();
+		foreach(Transform child in transform)
+		{
+			abandon_list.Add(child.gameObject);
+		}
+
+		
+		foreach(GameObject go in abandon_list)
+		{
+			go.transform.SetParent(null);
+
+			if(editorObjectCache.ContainsKey(go.name))
+			{
+				duplicate_keys.Add(go.name);
+
+				GameObject dupe = editorObjectCache[go.name];
+
+				editorObjectCache.Remove(go.name);
+				DestroyImmediate(dupe);
+				DestroyImmediate(go);
+				continue;
+			}
+
+			if(duplicate_keys.Contains(go.name))
+			{
+				DestroyImmediate(go);
+				continue;
+			}
+
+			editorObjectCache[go.name] = go;
+		}
+	}
+
+
 
 	public void DestroyAll(List<GameObject> kill_list)
 	{
@@ -257,16 +277,36 @@ public class SuperMetaNode : SuperContainer
 		{
 			Dictionary<string,object> node = raw_node as Dictionary<string,object>;
 			string node_type = (string)node["type"];
+			string name = (string)node["name"];
 			switch(node_type)
 			{
 				case "container":
-					SuperContainerConfig.ProcessNode(this, parent, node);
+					if(editorObjectCache.ContainsKey(name))
+					{
+						SuperContainerConfig.ProcessNode(this, parent, node, editorObjectCache[name]);
+						editorObjectCache.Remove(name);
+					}else{
+						SuperContainerConfig.ProcessNode(this, parent, node);
+					}
 					break;
 				case "text":
-					SuperLabelConfig.ProcessNode(this, parent, node);
+					if(editorObjectCache.ContainsKey(name))
+					{
+						SuperLabelConfig.ProcessNode(this, parent, node, editorObjectCache[name]);	
+						editorObjectCache.Remove(name);
+					}else{
+						SuperLabelConfig.ProcessNode(this, parent, node);
+					}
+					
 					break;
 				case "image":
-					SuperSpriteConfig.ProcessNode(this, parent, node);
+					if(editorObjectCache.ContainsKey(name))
+					{
+						SuperSpriteConfig.ProcessNode(this, parent, node, editorObjectCache[name]);
+						editorObjectCache.Remove(name);
+					}else{
+						SuperSpriteConfig.ProcessNode(this, parent, node);
+					}
 					break;
 				case "placeholder":
 					ProcessPlaceholderNode(node);

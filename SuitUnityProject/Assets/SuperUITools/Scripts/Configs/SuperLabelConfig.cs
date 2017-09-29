@@ -46,60 +46,89 @@ public class SuperLabelConfig : MonoBehaviour
 
     public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
     {
-        GameObject game_object = new GameObject();
-        SuperLabel super_label = game_object.AddComponent(typeof(SuperLabel)) as SuperLabel;
-        Text label = game_object.AddComponent(typeof(Text)) as Text;
+        ProcessNode(root_node, parent, node, null);
+    }
 
-        super_label.CreateRectTransform(game_object, node);
-
+    public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node, GameObject maybe_recycled_node)
+    {
         string name = (string)node["name"];
-        game_object.name = name;
-        super_label.hierarchyDescription = "LABEL";
+        string label_type = name.Split('_')[0];
 
-        label.horizontalOverflow = HorizontalWrapMode.Overflow;
+        if(labelClasses.ContainsKey(label_type))
+        {
+            object[] args = new object[4];
+            args[0] = root_node;
+            args[1] = parent;
+            args[2] = node;
+            args[3] = maybe_recycled_node;
+            labelClasses[label_type].GetMethod("ProcessNode").Invoke(null, args);
+            return;
+        }
+
+        GameObject game_object = maybe_recycled_node;
+        SuperLabel label = null;
+        Text ui_text = null;
+
+        if(game_object == null)
+        {
+            game_object = new GameObject();
+            label = game_object.AddComponent(typeof(SuperLabel)) as SuperLabel;
+            ui_text = game_object.AddComponent(typeof(Text)) as Text;
+        }else{
+            label = game_object.GetComponent<SuperLabel>();
+            ui_text = game_object.GetComponent<Text>();
+        }
+        
+        label.CreateRectTransform(game_object, node);
+
+        label.name = name;
+        label.hierarchyDescription = "LABEL";
+        
+
+        ui_text.horizontalOverflow = HorizontalWrapMode.Overflow;
 
         string font = (string)node["font"];
         if(SuperLabelConfig.GetFont(font) != null)
         {
-            label.font = SuperLabelConfig.GetFont(font);
+            ui_text.font = SuperLabelConfig.GetFont(font);
         }else{
             Debug.Log("[WARNING] SuperLabelConfig not able to find " + font + " -- falling back to Arial");
         }
 
         string text = (string)node["text"];
-        label.text = text;
+        ui_text.text = text;
 
         int font_size = Convert.ToInt32(node["fontSize"]);
-        label.fontSize = font_size;
+        ui_text.fontSize = font_size;
 
         string font_color_hex = (string)node["color"];
-        label.color = HexToColor(font_color_hex);
+        ui_text.color = HexToColor(font_color_hex);
 
         if(node.ContainsKey("justification"))
         {
-            RectTransform rect_transform = super_label.GetComponent<RectTransform>();
+            RectTransform rect_transform = label.GetComponent<RectTransform>();
 
             string alignment = (string)node["justification"];
             if(alignment == "center")
             {
-                label.alignment = TextAnchor.MiddleCenter;
+                ui_text.alignment = TextAnchor.MiddleCenter;
             }else if(alignment == "left"){
-                label.alignment = TextAnchor.MiddleLeft;
+                ui_text.alignment = TextAnchor.MiddleLeft;
                 rect_transform.pivot = new Vector2(0f , 0.5f);
             }else if(alignment == "right"){
-                label.alignment = TextAnchor.MiddleRight;
+                ui_text.alignment = TextAnchor.MiddleRight;
                 rect_transform.pivot = new Vector2(1f , 0.5f);
             }
 
         }
 
-        super_label.cachedMetadata = node;
-        super_label.rootNode = root_node;
+        label.cachedMetadata = node;
+        label.rootNode = root_node;
 
-        root_node.labelReferences.Add(new LabelReference(name, super_label));
+        root_node.labelReferences.Add(new LabelReference(name, label));
 
-        super_label.transform.SetParent(parent);
-        super_label.Reset();
+        label.transform.SetParent(parent);
+        label.Reset();
 
     }
 

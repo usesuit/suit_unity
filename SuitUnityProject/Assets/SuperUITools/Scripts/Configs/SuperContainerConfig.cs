@@ -40,23 +40,37 @@ public class SuperContainerConfig : MonoBehaviour
         }
     }
 
+    
     public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node)
+    {
+        ProcessNode(root_node, parent, node, null);
+    }
+
+    public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node, GameObject maybe_recycled_node)
     {
         string name = (string)node["name"];
         string container_type = name.Split('_')[0];
 
         if(containerClasses.ContainsKey(container_type))
         {
-            object[] args = new object[3];
+            object[] args = new object[4];
             args[0] = root_node;
             args[1] = parent;
             args[2] = node;
+            args[3] = maybe_recycled_node;
             containerClasses[container_type].GetMethod("ProcessNode").Invoke(null, args);
             return;
         }
 
-        GameObject game_object = new GameObject();
-        SuperContainer container = game_object.AddComponent(typeof(SuperContainer)) as SuperContainer;
+        GameObject game_object = maybe_recycled_node;
+        SuperContainer container = null;
+        if(game_object == null)
+        {
+            game_object = new GameObject();
+            container = game_object.AddComponent(typeof(SuperContainer)) as SuperContainer;
+        }else{
+            container = game_object.GetComponent<SuperContainer>();
+        }
 
         container.CreateRectTransform(game_object, node);
 
