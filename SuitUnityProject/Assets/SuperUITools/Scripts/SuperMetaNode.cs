@@ -3,9 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-using UnityEngine;
+using UnityEditor;
+using UnityEditor.Sprites;
 
-using UnityEditor;  // Most of the utilities we are going to use are contained in the UnityEditor namespace
+using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.U2D;
 
@@ -268,7 +269,6 @@ public class SuperMetaNode : SuperContainer
             }
         }
 
-        PostProcessSprites();
         ClearEditorCache();
 	}
 
@@ -388,29 +388,6 @@ public class SuperMetaNode : SuperContainer
 			}
 		}
 
-	}
-
-	void PostProcessSprites()
-	{
-        bool use_atlas = true;
-        if(atlas == null)
-        {
-            Debug.Log("[WARNING] NO ATLAS SET -- FALLING BACK TO DIRECT IMAGES");
-            use_atlas = false;
-        }        
-
-        foreach(SpriteReference sprite_ref in spriteReferences)
-        {
-        	SuperSprite super_sprite = sprite_ref.sprite;
-            if(use_atlas)
-            {
-                Sprite sprite = atlas.GetSprite(super_sprite.imageName);
-                super_sprite.GetComponent<Image>().sprite = sprite;
-            }else{
-                Texture2D texture = (Texture2D)AssetDatabase.LoadMainAssetAtPath(super_sprite.assetPath);
-                super_sprite.GetComponent<Image>().sprite = Sprite.Create(texture, new Rect(0,0,texture.width, texture.height), new Vector2(0.5f, 0.5f));
-            }
-        }
 	}
 
 	public void EditorUpdate()

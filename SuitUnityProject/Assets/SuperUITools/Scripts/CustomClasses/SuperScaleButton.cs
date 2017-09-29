@@ -46,7 +46,7 @@ public class SuperScaleButton : SuperButtonBase
         }
 
         button.CreateRectTransform(game_object, node);
-        button.name = lookup;
+        button.name = name;
         button.rootNode = root_node;
         button.cachedMetadata = node;
         button.hierarchyDescription = "BUTTON";
@@ -59,24 +59,25 @@ public class SuperScaleButton : SuperButtonBase
         if(node_type == "image")
         {
             SuperSprite sprite = game_object.GetComponent<SuperSprite>();
+            Image image = null;
             if(sprite == null)
             {
                 sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
-                game_object.AddComponent(typeof(Image));
+                image = game_object.AddComponent(typeof(Image)) as Image;
+            }else{
+                image = game_object.GetComponent<Image>();
             }
 
             sprite.name = name;
             sprite.rootNode = root_node;
             sprite.cachedMetadata = node;
             
-            sprite.assetPath = root_node.imagePath + "/" + name + ".png";
-            sprite.imageName = name;
+            image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(root_node.imagePath + "/" + name + ".png");
 
             sprite.resetX = button.resetX;
             sprite.resetY = button.resetY;
 
             root_node.spriteReferences.Add(new SpriteReference(name, sprite));
-            // root_node.sprites[name] = sprite;
             game_object.transform.SetParent(parent);
 
             sprite.Reset();

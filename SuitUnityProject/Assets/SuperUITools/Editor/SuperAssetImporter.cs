@@ -6,7 +6,6 @@ using UnityEngine;
 using UnityEngine.U2D;
 
 using UnityEditor;  // Most of the utilities we are going to use are contained in the UnityEditor namespace
-using UnityEditor.Sprites;
 
 using System;
 using System.Collections;
@@ -39,7 +38,7 @@ internal sealed class SuperAssetImporter : AssetPostprocessor
 
     void OnPostprocessTexture(Texture2D texture)
     {
-    	Packer.RebuildAtlasCacheIfNeeded(EditorUserBuildSettings.activeBuildTarget, true);
+    	Debug.Log("POST PROCESS: " + texture);
     }
 
     void PrintMethods(Type type)

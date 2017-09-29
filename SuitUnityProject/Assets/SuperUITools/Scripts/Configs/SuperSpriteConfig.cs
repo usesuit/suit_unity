@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+
+using UnityEditor;
+
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.U2D;
@@ -64,13 +67,14 @@ public class SuperSpriteConfig : MonoBehaviour
 
         GameObject game_object = maybe_recycled_node;
         SuperSprite sprite = null;
+        Image image = null;
         if(game_object == null)
         {
             game_object = new GameObject();
-            game_object.AddComponent(typeof(Image));
-
+            image = game_object.AddComponent(typeof(Image)) as Image;
             sprite = game_object.AddComponent(typeof(SuperSprite)) as SuperSprite;
         }else{
+            image = game_object.GetComponent<Image>();
             sprite = game_object.GetComponent<SuperSprite>();
         }
 
@@ -78,8 +82,8 @@ public class SuperSpriteConfig : MonoBehaviour
 
         sprite.name = image_name;
         sprite.hierarchyDescription = "SPRITE";
-        sprite.assetPath = root_node.imagePath + "/" + image_name + ".png";
-        sprite.imageName = image_name;
+
+        image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(root_node.imagePath + "/" + image_name + ".png");
 
         if(image_type == "flipX")
         {
