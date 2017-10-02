@@ -30,7 +30,8 @@ public class SuperContainerConfig : MonoBehaviour
                 if(container_config == null)
                 {
                     container_config = config_go.AddComponent(typeof(SuperContainerConfig)) as SuperContainerConfig;
-                    container_config.customContainers = new CustomClass[0];
+                    container_config.customContainers = new CustomClass[1];
+                    container_config.customContainers[0] = new CustomClass("Scale Button", "scalebtn", "SuperScaleButton");
                 }
 
                 _instance = container_config;
