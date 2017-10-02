@@ -1,4 +1,10 @@
-﻿using System;
+﻿/*
+ *	Note: current implementation duplicates the texture to apply the insets (sprite.border is read-only)
+ *		this has the unfortunate side effect of splitting up sprite batching and creating more draw calls
+ *		soooo... this thing is even more than usual a trade-off between memory and speed.
+ */
+
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
