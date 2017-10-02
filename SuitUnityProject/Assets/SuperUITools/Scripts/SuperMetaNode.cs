@@ -313,7 +313,8 @@ public class SuperMetaNode : SuperContainer
 					}
 					break;
 				case "placeholder":
-					ProcessPlaceholderNode(node);
+					Rect placeholder = ProcessPlaceholderNode(node);
+					placeholderReferences.Add(new PlaceholderReference(name, placeholder));
 					break;
 				default:
 					Debug.Log("UH OH -- INVALID NODE FOUND: " + node_type);
@@ -322,38 +323,17 @@ public class SuperMetaNode : SuperContainer
 		}
 	}
 
-	SuperNode ProcessScale9Node(Dictionary<string,object> node)
+	public static Rect ProcessPlaceholderNode(Dictionary<string,object> node)
 	{
-		Debug.Log("TODO: SCALE 9");
-		GameObject game_object = new GameObject();
-		RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
-		SuperNode container = game_object.AddComponent(typeof(SuperNode)) as SuperNode;
-		
-		container.cachedMetadata = node;
-		container.rootNode = this;
+		List<object> position = node["position"] as List<object>;
+        float x = Convert.ToSingle(position[0]);
+        float y = Convert.ToSingle(position[1]);
 
-		return container;
-	}
+        List<object> size = node["size"] as List<object>;
+        float w = Convert.ToSingle(size[0]);
+        float h = Convert.ToSingle(size[1]);
 
-	SuperNode ProcessParagraphNode(Dictionary<string,object> node)
-	{
-		Debug.Log("TODO: Paragraphs");
-		GameObject game_object = new GameObject();
-		RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
-		SuperNode container = game_object.AddComponent(typeof(SuperNode)) as SuperNode;
-
-		container.cachedMetadata = node;
-		container.rootNode = this;
-
-		return container;
-	}
-
-	void ProcessPlaceholderNode(Dictionary<string,object> node)
-	{
-		//return a MODAL if the placeholder is named modal
-		// GameObject game_object = new GameObject();
-		// RectTransform rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
-		// SuperNode container = game_object.AddComponent(typeof(SuperNode)) as SuperNode;
+        return new Rect(x - w/2, y - h/2, w, h);
 	}
 
 	public void PrintDisplayTree()
