@@ -20,9 +20,15 @@ using UnityEngine.U2D;
 
 public class SuperScale9Sprite : SuperSprite
 {
+	[HideInInspector]
 	public Rect imageRect;
+	[HideInInspector]
     public Rect centerRect;
+    [HideInInspector]
     public Rect sizeRect;
+
+    //exposing this to the editor to make it easier to grab the values and go apply them to the sprite importer
+    public Vector4 borderLBRT;
 
 
     //Custom classes don't need to create a ProcessNode that doesn't take maybe_recycled_node, since
@@ -102,17 +108,26 @@ public class SuperScale9Sprite : SuperSprite
 
 
 		Sprite original = image.sprite;
+		sprite.CalculateBorder();
+		
+		//most commonly, the border will be Vector4.zero... but also want to warn when the underlying asset has changed
+		if(image.sprite.border != sprite.borderLBRT)
+		{
+			Debug.Log("[WARNING] sprite " + name + " has no border or doesn't match! This can't be automated...");
+			Debug.Log("... duplicating the sprite, which will split your sprite batching. To fix this...");
+			Debug.Log("... set the sprite's border to " + sprite.borderLBRT);
+			Rect rect = new Rect(0,0, original.texture.width, original.texture.height);
+ 			Sprite replacement= Sprite.Create(original.texture, rect, new Vector2(0.5f,0.5f), 100, 1, SpriteMeshType.FullRect, sprite.borderLBRT);
+ 			image.sprite = replacement;
+		}
 
-		Vector4 border = sprite.CalculateBorder();
-		Rect rect = new Rect(0,0, original.texture.width, original.texture.height);
- 		Sprite replacement= Sprite.Create(original.texture, rect, new Vector2(0.5f,0.5f), 100, 1, SpriteMeshType.FullRect, border);
 
- 		image.sprite = replacement;
+		
 		image.type = Image.Type.Sliced;
 		// image.hasBorder = true;		
 
         sprite.name = name;
-        sprite.hierarchyDescription = "SCALE9_SPRITE";
+        sprite.hierarchyDescription = "SCALE9";
 
         sprite.cachedMetadata = node;
         sprite.rootNode = root_node;
@@ -122,7 +137,7 @@ public class SuperScale9Sprite : SuperSprite
         sprite.Reset();
     }
 
-    Vector4 CalculateBorder()
+    void CalculateBorder()
     {
 		float border_left = centerRect.xMin - imageRect.xMin;
 		float border_top = imageRect.yMax - centerRect.yMax;
@@ -130,6 +145,6 @@ public class SuperScale9Sprite : SuperSprite
 		float border_bottom = centerRect.yMin - imageRect.yMin;
 
 		//x,y,z,w = left, bottom, right, top
-		return new Vector4(border_left, border_bottom, border_right, border_top);
+		borderLBRT = new Vector4(border_left, border_bottom, border_right, border_top);
     }
 }
