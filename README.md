@@ -1,3 +1,12 @@
+TODO: getting started video
+
+TODO: contribution guide
+
+TODO: example projects
+
+TODO: list of shipped projects
+
+
 Super UI Tools
 ======================================================
 SUIT is a UI framework built around a few major ideas:
@@ -43,12 +52,14 @@ Unity doesn't have a dependency manager, so I kind of don't see the point of Uni
 
 Conventions
 ============================================================
-SUIT is a heavily convention-based workflow. By default, we assume your Asset folder will have a folder named "Atlases" that will contain metadata exported by the SUIT Exporter. In previous games we've had our PSDs outside the unity project and run a synch script to move over atlases/images/metadata to the right location in Unity. This is still very much possible (and sometimes required if you use Git as Git doesn't play super nicely with big ass PSDs), but for now we're trying to make it so you can just put your PSDs in the Atlases folder. We recommend using the Unity 2017 SpriteAtlas with folder references to the exported image folders, as this requires the least amount of updating. When you export a PSD and switch back to unity, the atlas and metadata should update automatically.
+SUIT is a heavily convention-based workflow. By default, we assume your Assets folder will have a folder named "Atlases" that will contain metadata exported by the SUIT Exporter. In previous games we've had our PSDs outside the unity project and run a synch script to move over atlases/images/metadata to the right location in Unity. This is still very much possible (and sometimes required if you use Git as Git doesn't play super nicely with big ass PSDs), but for now we're trying to make it so you can just put your PSDs in the Atlases folder. We recommend using the Unity 2017 SpriteAtlas with folder references to the exported image folders, as this requires the least amount of manual fiddling. When you export a PSD and switch back to unity, the atlas and metadata should update automatically.
 
 
 Config Objects
 ============================================================
-The first time you try to construct an object from metadata, a default set of configs should be added to the scene: "SuperConfig". This config object is made up of three componenets: SuperContainerConfig, SuperSpriteConfig, SuperLabelConfig. Each of these three config objects is responsible for creating or delegating nodes of that type from the exported Photoshop metadata. The configs are called based on the METADATA, not the resultant object type:
+The first time you try to construct an object from metadata, a default set of configs should be added to the scene: "SuperConfig". At some point in the future we may provide some prefabs with different component settings for different use cases, but we're not there yet!
+
+This config object is made up of three componenets: SuperContainerConfig, SuperSpriteConfig, SuperLabelConfig. Each of these three config objects is responsible for creating or delegating nodes of that type from the exported Photoshop metadata. The configs are called based on the METADATA, not the resultant object type:
 
 * a group layer (photoshop group) is passed to the SuperContainerConfig
 * an art layer (exported PNG from Photoshop) is passed to the SuperSpriteConfig
