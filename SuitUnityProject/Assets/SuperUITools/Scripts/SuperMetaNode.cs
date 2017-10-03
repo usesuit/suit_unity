@@ -107,7 +107,7 @@ public class SuperMetaNode : SuperContainer
 		
 	}
 
-	public SuperContainer Container(string name)
+	public SuperContainer ContainerWithName(string name)
 	{
 		if(!containers.ContainsKey(name))
 		{
@@ -120,13 +120,70 @@ public class SuperMetaNode : SuperContainer
 		return containers[name];
 	}
 
-	// public SuperLabel Label(string name)
-	// {
+	public SuperSprite SpriteWithName(string name)
+	{
+		if(!sprites.ContainsKey(name))
+		{
+			Debug.Log("[ERROR] Invalid SPRITE... TRY:");
+			foreach(string key in sprites.Keys)
+			{
+				Debug.Log("      " + key);
+			}
+		}
+		return sprites[name];
+	}
 
-	// }
+	public SuperLabel LabelWithName(string name)
+	{
+		if(!labels.ContainsKey(name))
+		{
+			Debug.Log("[ERROR] Invalid LABEL... TRY:");
+			foreach(string key in labels.Keys)
+			{
+				Debug.Log("      " + key);
+			}
+		}
+		return labels[name];
+	}
 
+	public Rect PlaceholderWithName(string name)
+	{
+		if(!placeholders.ContainsKey(name))
+		{
+			Debug.Log("[ERROR] Invalid PLACEHOLDER... TRY:");
+			foreach(string key in placeholders.Keys)
+			{
+				Debug.Log("      " + key);
+			}
+		}
+		return placeholders[name];
+	}
 
+	public SuperButtonBase ButtonWithName(string name)
+	{
+		if(!buttons.ContainsKey(name))
+		{
+			Debug.Log("[ERROR] Invalid BUTTON... TRY:");
+			foreach(string key in buttons.Keys)
+			{
+				Debug.Log("      " + key);
+			}
+		}
+		return buttons[name];
+	}
 
+	public SuperNode ControlWithName(string name)
+	{
+		if(!controls.ContainsKey(name))
+		{
+			Debug.Log("[ERROR] Invalid CONTROL... TRY:");
+			foreach(string key in controls.Keys)
+			{
+				Debug.Log("      " + key);
+			}
+		}
+		return controls[name];
+	}
 
 
 

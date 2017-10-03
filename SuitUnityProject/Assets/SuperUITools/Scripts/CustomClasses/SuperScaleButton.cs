@@ -30,7 +30,6 @@ public class SuperScaleButton : SuperButtonBase
     {
         string node_type = (string)node["type"];
         string name = (string)node["name"];
-        string lookup = name.Replace("scalebtn_","");
 
         GameObject game_object = maybe_recycled_node;
         SuperScaleButton button = null;
@@ -51,7 +50,7 @@ public class SuperScaleButton : SuperButtonBase
         button.cachedMetadata = node;
         button.hierarchyDescription = "BUTTON";
 
-        root_node.buttonReferences.Add(new ButtonReference(lookup, button));
+        root_node.buttonReferences.Add(new ButtonReference(name, button));
 
         game_object.transform.SetParent(parent);
         button.Reset();

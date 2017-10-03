@@ -23,8 +23,8 @@ public class SimpleTemplateALternate : MonoBehaviour
 	void Start () 
 	{
 		metaNode = GetComponent<SuperMetaNode>();
-		rotator = metaNode.Container("rotator").transform;
-		innerRotator = metaNode.Container("inner_rotator").transform;
+		rotator = metaNode.ContainerWithName("rotator").transform;
+		innerRotator = metaNode.ContainerWithName("inner_rotator").transform;
 	}
 	
 	// Update is called once per frame

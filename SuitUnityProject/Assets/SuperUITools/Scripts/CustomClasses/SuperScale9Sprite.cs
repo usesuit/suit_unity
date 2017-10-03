@@ -36,7 +36,6 @@ public class SuperScale9Sprite : SuperSprite
 	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node, GameObject maybe_recycled_node)
     {
         string name = (string)node["name"];
-        string lookup = name.Replace("scale9_","");
 
         GameObject game_object = maybe_recycled_node;
         SuperScale9Sprite sprite = null;
@@ -132,7 +131,7 @@ public class SuperScale9Sprite : SuperSprite
         sprite.cachedMetadata = node;
         sprite.rootNode = root_node;
         
-        root_node.spriteReferences.Add(new SpriteReference(lookup, sprite));
+        root_node.spriteReferences.Add(new SpriteReference(name, sprite));
         game_object.transform.SetParent(parent);
         sprite.Reset();
     }

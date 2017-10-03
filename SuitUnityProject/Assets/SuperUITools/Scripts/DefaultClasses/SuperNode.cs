@@ -19,21 +19,76 @@ public class SuperNode : MonoBehaviour
 	[HideInInspector]
 	public string hierarchyDescription = "";
 
+	private RectTransform rectTransform;
+
+	public float x
+	{
+		get
+		{
+			return rectTransform.localPosition.x;	
+		}
+		set
+		{
+			rectTransform.localPosition = new Vector3(value, rectTransform.localPosition.y, rectTransform.localPosition.z);
+		}
+	}
+
+	public float y
+	{
+		get
+		{
+			return rectTransform.localPosition.y;	
+		}
+		set
+		{
+			rectTransform.localPosition = new Vector3(rectTransform.localPosition.x, value, rectTransform.localPosition.z);
+		}
+	}
+
+	public float width
+	{
+		get
+		{
+			return rectTransform.sizeDelta.x;
+		}
+		set
+		{
+			rectTransform.sizeDelta = new Vector2(value, height);
+		}
+	}
+
+	public float height
+	{
+		get
+		{
+			return rectTransform.sizeDelta.y;	
+		}
+		set
+		{
+			rectTransform.sizeDelta = new Vector2(width, value);
+		}
+	}
+
+	void Awake()
+	{
+		rectTransform = GetComponent<RectTransform>();
+	}
+
 	virtual public void Reset()
 	{
-		RectTransform rect_transform = GetComponent<RectTransform>();
+		rectTransform = GetComponent<RectTransform>();
 
-		if(rect_transform == null)
+		if(rectTransform == null)
 		{
 			return;
 		}
 
-		rect_transform.localScale = new Vector3(1f, 1f, 1f);
+		rectTransform.localScale = new Vector3(1f, 1f, 1f);
 		
 		if(!(resetX == float.MaxValue  || resetY == float.MaxValue))
 		{
-			rect_transform.anchoredPosition = new Vector2(resetX, resetY);
-			rect_transform.localPosition = new Vector3(rect_transform.localPosition.x, rect_transform.localPosition.y, 0f);
+			rectTransform.anchoredPosition = new Vector2(resetX, resetY);
+			rectTransform.localPosition = new Vector3(rectTransform.localPosition.x, rectTransform.localPosition.y, 0f);
 		}
 	}
 
@@ -47,10 +102,10 @@ public class SuperNode : MonoBehaviour
 			return;
 		}
 
-		RectTransform rect_transform = game_object.GetComponent<RectTransform>();
-		if(rect_transform == null)
+		rectTransform = game_object.GetComponent<RectTransform>();
+		if(rectTransform == null)
 		{
-			rect_transform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
+			rectTransform = game_object.AddComponent(typeof(RectTransform)) as RectTransform;
 		}
 		
         List<object> position = node["position"] as List<object>;
@@ -61,8 +116,8 @@ public class SuperNode : MonoBehaviour
         float w = Convert.ToSingle(size[0]);
         float h = Convert.ToSingle(size[1]);
 
-        rect_transform.position = new Vector2(x, y);
-        rect_transform.sizeDelta = new Vector2(w, h);
+        rectTransform.position = new Vector2(x, y);
+        rectTransform.sizeDelta = new Vector2(w, h);
 
         if(node.ContainsKey("pivot"))
         {
@@ -70,7 +125,7 @@ public class SuperNode : MonoBehaviour
             float pivot_x = Convert.ToSingle(pivot[0]);
             float pivot_y = Convert.ToSingle(pivot[1]);     
 
-            rect_transform.pivot = new Vector2(0.5f - pivot_x/w, 0.5f - pivot_y/h);
+            rectTransform.pivot = new Vector2(0.5f - pivot_x/w, 0.5f - pivot_y/h);
         }
 
         resetX = x;

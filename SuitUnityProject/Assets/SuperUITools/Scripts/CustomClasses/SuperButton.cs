@@ -30,7 +30,6 @@ public class SuperButton : SuperButtonBase
 	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node, GameObject maybe_recycled_node)
     {
         string name = (string)node["name"];
-        string lookup = name.Replace("btn_","");
 
         GameObject game_object = maybe_recycled_node;
         SuperButton button = null;
@@ -53,7 +52,7 @@ public class SuperButton : SuperButtonBase
         button.cachedMetadata = node;
         button.hierarchyDescription = "BUTTON";
 
-        root_node.buttonReferences.Add(new ButtonReference(lookup, button));
+        root_node.buttonReferences.Add(new ButtonReference(name, button));
 
         game_object.transform.SetParent(parent);
         button.Reset();
