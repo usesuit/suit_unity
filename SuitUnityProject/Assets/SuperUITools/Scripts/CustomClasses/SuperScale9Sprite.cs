@@ -71,6 +71,9 @@ public class SuperScale9Sprite : SuperSprite
 			{
 				case "image":
 					has_image = true;
+					//we discard the "scale9_whatever" and just use the image name
+					name = child_name;
+					
 					image.sprite = AssetDatabase.LoadAssetAtPath<Sprite>(root_node.imagePath + "/" + child_name + ".png");
 					sprite.imageRect = SuperMetaNode.ProcessPlaceholderNode(child_node);
 					break;
