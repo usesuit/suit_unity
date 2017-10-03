@@ -57,7 +57,7 @@ The first time you try to construct an object from metadata, a default set of co
 
 The convention for overriding these defaults are name prefixes, which can be added to the config objects (see graphic).
 
-![Custom Container Objects][/readme/custom_config.png]
+![Custom Container Objects](/readme/custom_config.png)
 
 When a master config is passed a chunk of metadata (in the form of a JSON object), the first thing it does is check for the name of the node. If the prefix on that name (i.e. "scalebtn_", "btn_", "tab_", "scale9_") matches a known prefix in that config object, the master config will simply hand off node construction to the provided class. That class is responsible for providing a ProcessNode method which:
 
