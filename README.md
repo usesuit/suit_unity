@@ -12,7 +12,7 @@ Super UI Tools
 SUIT is a UI framework built around a few major ideas:
 
 * By building on a set of simple assumptions (I need a way to draw sprites, a way to do labels, and some sort of container node), runtimes can be built on almost any modern platform. Having good cross-platform tools and conventions makes it much easier to choose the right tool for the job.
-* If an artist is going to make comps in Photoshop, it's a waste of time to recreate those in engine by hand. Export the metadata from the production PSDs and lay out everything automatically. Let programmers spending their time wiring up functionality, not doing things computers are better at.
+* If an artist is going to make comps in Photoshop, it's a waste of time to recreate those in engine by hand. Export the metadata from the production PSDs and lay out everything procedurally. Let programmers spend their time wiring up functionality, not doing things computers are better at.
 * Wherever possible, access interactive objects (Containers, Sprites, Labels) by NAME and not direct reference. This yields a few major benefits:
 
 	1. An artist can redesign and move things around the screen without breaking any functionality. Just re-import the latest metadata nd rebuild!
