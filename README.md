@@ -84,5 +84,7 @@ Provided Controls
 * a placeholder named "placeholder_center" which marks the rect to be used for the inner rectangle of the scale9 sprite.
 * a placeholder named "placeholder_size" which marks the expanded outer rectangle that the image will be stretched to fill.
 
+![Scale9 Setup](/readme/scale9_structure.png)
+
 
 **Tab Group** (container, prefix "tab_") -- we originally used this to display a standard bar of buttons with one selected/disabled and the rest in normal states, but it's expanded over time to be more generally a container with discrete states. At instantiation, all named children are scanned for postfixed state names (i.e. some_container_tab1, some_container_tab2 would have states of "tab1" and "tab2"). Setting the state will disable any children whose names don't match that state. Additionlly, external game objects can be bound to specific states (for example, if you have specific views attached to a row of buttons) to "follow along" with state changes in the tab class.
