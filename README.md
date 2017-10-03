@@ -69,3 +69,20 @@ When a master config is passed a chunk of metadata (in the form of a JSON object
 	* ControlReference is a catch-all for custom controls that don't fit into one of the above reference lists
 * in the case of button subclasses, wire up event listeners for SuperButtonBase.onCLick
 * in the case of container subclasses, make sure to call ProcessChildren
+
+Provided Controls
+============================================================
+**Button** (container, prefix "btn_") -- scans children for layers (of any type) that end with "_up", "_down", "_over", and "_disabled" and groups them into child gameObjects. Any child which doesn't match a button postfix is just left as an "always on" node. An AnimationController is added to toggle between the four states as a normal Button. Clicks are passed to SuperButtonBase.onClick... though you can also add custom event listeners just as you would with a normal Button.
+
+**Scale Button** (container, prefix "scalebtn_") -- a regular container (all of its children will be added as normal), but one that gets a Button added. The button is given an animation which scales slightly up on hover and slighlty down on press. This class is a great way to get something that "feels" like a button with the minimum art possible (just a background and a label, or even just a background). We often start with ScaleButtons early in development and then trasition to custom buttons during polish. Clicks are passed to SuperButtonBase.onClick... though you can also add custom event listeners just as you would with a normal Button.
+
+**Scale Button** (image, prefix "scalebtn_") -- this functions exactly the same as the container-based one, but you aren't required to wrap it in a container. You can just have an image layer in photoshop named "scalebtn_name" and it will get wired up correctly as a Button. Clicks are passed to SuperButtonBase.onClick... though you can also add custom event listeners just as you would with a normal Button.
+
+**Scale9 Sprite** (container, prefix "scale9_") -- the scale9 group will be completely discarded, so its name is irrelevant. This class will look for three specific children:
+
+* an image layer (no naming restrictions), which will provide the name of this sprite and image to be used
+* a placeholder named "placeholder_center" which marks the rect to be used for the inner rectangle of the scale9 sprite.
+* a placeholder named "placeholder_size" which marks the expanded outer rectangle that the image will be stretched to fill.
+
+
+**Tab Group** (container, prefix "tab_") -- we originally used this to display a standard bar of buttons with one selected/disabled and the rest in normal states, but it's expanded over time to be more generally a container with discrete states. At instantiation, all named children are scanned for postfixed state names (i.e. some_container_tab1, some_container_tab2 would have states of "tab1" and "tab2"). Setting the state will disable any children whose names don't match that state. Additionlly, external game objects can be bound to specific states (for example, if you have specific views attached to a row of buttons) to "follow along" with state changes in the tab class.
