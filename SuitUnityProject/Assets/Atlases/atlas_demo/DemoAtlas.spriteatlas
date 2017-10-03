@@ -26,12 +26,12 @@ SpriteAtlas:
       enableTightPacking: 0
     packedHash:
       serializedVersion: 2
-      Hash: 6e6445e0738f72f017f46fd800111a53
+      Hash: 488e812dd2112de008578d0d11d51bc9
     variantMultiplier: 1
     bindAsDefault: 1
     finalFormat: 4
-    hashString: 6e6445e0738f72f017f46fd800111a53
-    totalSpriteSurfaceArea: 3001548
+    hashString: 488e812dd2112de008578d0d11d51bc9
+    totalSpriteSurfaceArea: 2998748
     packables:
     - {fileID: 102900000, guid: c3f312bf053b11a4fabb70e4ae550273, type: 3}
     - {fileID: 102900000, guid: e42a27e909c2ef5488acd7c16455b60c, type: 3}
@@ -52,15 +52,14 @@ SpriteAtlas:
     - bfd670bb7db22ab4e86733f03af37a2f: 21300000
     - 36eb1dcc877bf1640bc80760e712b85b: 21300000
     - 055e39b76e5a43a4b8cac9ced84a3d59: 21300000
+    - be74a23e60d9f1e469b4fd6840f29c00: 21300000
     - 44ffae849c01f524ab558637611476a0: 21300000
-    - 5861065343a3ffe4980c9f3d791d788b: 21300000
     - 0f7f22debfa71ee459451b3cd152defa: 21300000
     - fbf570660456d0d45a4f9d833fd9d586: 21300000
+    - 5690cd589fe8c2148b168cf0a1458a58: 21300000
     - 19637facac5f7954eb8f20a46424cff4: 21300000
     - ea2534818f64cce4f884721306205328: 21300000
     - 623e676d490ae04498dcee42b5400d55: 21300000
-    - be74a23e60d9f1e469b4fd6840f29c00: 21300000
-    - 5690cd589fe8c2148b168cf0a1458a58: 21300000
     - e4a0b75b8ced59e4faac8333e2a80f28: 21300000
     - d92797c52887cf241b701cf396d28145: 21300000
     - 7de743194251b534a863ff7832714699: 21300000
@@ -89,15 +88,14 @@ SpriteAtlas:
   - {fileID: 21300000, guid: bfd670bb7db22ab4e86733f03af37a2f, type: 3}
   - {fileID: 21300000, guid: 36eb1dcc877bf1640bc80760e712b85b, type: 3}
   - {fileID: 21300000, guid: 055e39b76e5a43a4b8cac9ced84a3d59, type: 3}
+  - {fileID: 21300000, guid: be74a23e60d9f1e469b4fd6840f29c00, type: 3}
   - {fileID: 21300000, guid: 44ffae849c01f524ab558637611476a0, type: 3}
-  - {fileID: 21300000, guid: 5861065343a3ffe4980c9f3d791d788b, type: 3}
   - {fileID: 21300000, guid: 0f7f22debfa71ee459451b3cd152defa, type: 3}
   - {fileID: 21300000, guid: fbf570660456d0d45a4f9d833fd9d586, type: 3}
+  - {fileID: 21300000, guid: 5690cd589fe8c2148b168cf0a1458a58, type: 3}
   - {fileID: 21300000, guid: 19637facac5f7954eb8f20a46424cff4, type: 3}
   - {fileID: 21300000, guid: ea2534818f64cce4f884721306205328, type: 3}
   - {fileID: 21300000, guid: 623e676d490ae04498dcee42b5400d55, type: 3}
-  - {fileID: 21300000, guid: be74a23e60d9f1e469b4fd6840f29c00, type: 3}
-  - {fileID: 21300000, guid: 5690cd589fe8c2148b168cf0a1458a58, type: 3}
   - {fileID: 21300000, guid: e4a0b75b8ced59e4faac8333e2a80f28, type: 3}
   - {fileID: 21300000, guid: d92797c52887cf241b701cf396d28145, type: 3}
   - {fileID: 21300000, guid: 7de743194251b534a863ff7832714699, type: 3}
@@ -125,15 +123,14 @@ SpriteAtlas:
   - moveUp_bkg
   - scalebtn_simple_scalebtn
   - square_off_up
+  - extra_test_up
   - square_on_up
-  - extra_test_bkg
   - top_right
   - square_off_down
+  - extra_test_down
   - square_on_down
   - simple_image_with_spaces
   - image_with_spaces
-  - extra_test_up
-  - extra_test_down
   - test_bg
   - test_fill
   - flipX_circle
