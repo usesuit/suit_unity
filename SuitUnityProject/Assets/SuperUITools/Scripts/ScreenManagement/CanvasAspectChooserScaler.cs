@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 
@@ -22,6 +23,13 @@ public class UIAspectRatio
     }
 }
 
+[Serializable]
+public class SuitAspectChangeEvent : UnityEvent<string,string>{}
+ 
+ 
+
+
+public delegate void OnAspectChange(string old_aspect, string new_aspect);
 
 public class CanvasAspectChooserScaler : MonoBehaviour {
 
@@ -33,6 +41,8 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 	private float cameraHeight = 0.0f;
 
 	private CanvasScaler scaler;
+
+	public SuitAspectChangeEvent onChange;
 
 	void Start()
 	{
@@ -59,6 +69,13 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 		{
 			Debug.Log("NO ASPECT RATIOS TO CHOOSE FROM");
 			return;
+		}
+
+		string old_name = "";
+		string new_name = "";
+		if(currentAspectRatio != null)
+		{
+			old_name = currentAspectRatio.name;
 		}
 
 		currentAspectRatio = aspectRatios[0];
@@ -101,17 +118,22 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 			}
 		}
 
+		new_name = currentAspectRatio.name;
+
+		if(old_name != "" && old_name != new_name)
+		{
+			onChange.Invoke(old_name, new_name);	
+		}
+		
+
 		float width_ratio = cameraWidth / currentAspectRatio.width;
 		float height_ratio = cameraHeight / currentAspectRatio.height;
-		Debug.Log("WIDTH: " + width_ratio + "   HEIGHT: "+ height_ratio);
 
 		if(Mathf.Abs(height_ratio - 1) > Mathf.Abs(width_ratio - 1))
 		{
-			Debug.Log("FIT HEIGHT " + cameraWidth + "x" + cameraHeight);
 			//FIT HEIGHT
 			scaler.scaleFactor = height_ratio;
 		}else{
-			Debug.Log("FIT WIDTH " + cameraWidth + "x" + cameraHeight);
 			//FIT WIDTH
 			scaler.scaleFactor = width_ratio;
 		}
