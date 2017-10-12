@@ -33,6 +33,10 @@ public class SuperTab : SuperContainerBase
 		}
 		set
 		{
+			if(stateWillChange != null)
+			{
+				stateWillChange(this);
+			}
 			_currentState = value;
 
 			foreach(GameObject hide_me in allLinkedNodes)
@@ -61,6 +65,11 @@ public class SuperTab : SuperContainerBase
 				}else{
 					child.SetActive(false);
 				}
+	        }
+
+	        if(stateDidChange != null)
+	        {
+	        	stateDidChange(this);
 	        }
 
 		}
