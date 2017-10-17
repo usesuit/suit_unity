@@ -71,7 +71,6 @@ public class SuperMetaNode : SuperContainer
 
 		foreach(ContainerReference container in containerReferences)
 		{
-			Debug.Log("ADDING " + container.name);
 			containers[container.name] = container.container;
 		}
 		foreach(LabelReference label in labelReferences)
@@ -88,7 +87,6 @@ public class SuperMetaNode : SuperContainer
 		}
 		foreach(ButtonReference button in buttonReferences)
 		{
-			Debug.Log("ADDING BUTTON: " + button.name);
 			buttons[button.name] = button.button;
 		}
 		foreach(ControlReference control in controlReferences)
@@ -107,11 +105,43 @@ public class SuperMetaNode : SuperContainer
 		
 	}
 
+	public T Get<T>(string name)
+	{
+		if(typeof(T) == typeof(SuperContainer))
+		{
+			return (T)Convert.ChangeType(ContainerWithName(name), typeof(T));
+		}
+
+		if(typeof(T) == typeof(SuperSprite))
+		{
+			return (T)Convert.ChangeType(SpriteWithName(name), typeof(T));
+		}
+
+		if(typeof(T) == typeof(SuperLabel))
+		{
+			return (T)Convert.ChangeType(LabelWithName(name), typeof(T));
+		}
+
+		//not sure if rect makes sense here, as the goal would be to type .Get<Placeholder>()
+
+		//buttons also kind of break... intuitively I'd type .Get<SuperButton>() or .Get<ScaleButton>()
+		//but maybe just need to get used to typing .Get<SuperButtonBase>()
+		//this would be fixed by treating buttons as ordinary controls, BUT then we lose the ability 
+		//to iterate over all our buttons and add an easy catch-all button handler
+		if(typeof(T) == typeof(SuperButtonBase))
+		{
+			return (T)Convert.ChangeType(ButtonWithName(name), typeof(T));
+		}
+
+		//must be a control!
+		return (T)Convert.ChangeType(ControlWithName(name), typeof(T));
+	}
+
 	public SuperContainer ContainerWithName(string name)
 	{
 		if(!containers.ContainsKey(name))
 		{
-			Debug.Log("[ERROR] Invalid CONTAINER... TRY:");
+			Debug.Log("[ERROR] Invalid CONTAINER " + name + "... TRY:");
 			foreach(string key in containers.Keys)
 			{
 				Debug.Log("      " + key);
@@ -124,7 +154,7 @@ public class SuperMetaNode : SuperContainer
 	{
 		if(!sprites.ContainsKey(name))
 		{
-			Debug.Log("[ERROR] Invalid SPRITE... TRY:");
+			Debug.Log("[ERROR] Invalid SPRITE " + name + "... TRY 1 of " + sprites.Keys.Count + ":");
 			foreach(string key in sprites.Keys)
 			{
 				Debug.Log("      " + key);
@@ -137,7 +167,7 @@ public class SuperMetaNode : SuperContainer
 	{
 		if(!labels.ContainsKey(name))
 		{
-			Debug.Log("[ERROR] Invalid LABEL... TRY:");
+			Debug.Log("[ERROR] Invalid LABEL " + name + "... TRY:");
 			foreach(string key in labels.Keys)
 			{
 				Debug.Log("      " + key);
@@ -150,7 +180,7 @@ public class SuperMetaNode : SuperContainer
 	{
 		if(!placeholders.ContainsKey(name))
 		{
-			Debug.Log("[ERROR] Invalid PLACEHOLDER... TRY:");
+			Debug.Log("[ERROR] Invalid PLACEHOLDER " + name + "... TRY:");
 			foreach(string key in placeholders.Keys)
 			{
 				Debug.Log("      " + key);
@@ -163,7 +193,7 @@ public class SuperMetaNode : SuperContainer
 	{
 		if(!buttons.ContainsKey(name))
 		{
-			Debug.Log("[ERROR] Invalid BUTTON... TRY:");
+			Debug.Log("[ERROR] Invalid BUTTON " + name + "... TRY:");
 			foreach(string key in buttons.Keys)
 			{
 				Debug.Log("      " + key);
@@ -176,7 +206,7 @@ public class SuperMetaNode : SuperContainer
 	{
 		if(!controls.ContainsKey(name))
 		{
-			Debug.Log("[ERROR] Invalid CONTROL... TRY:");
+			Debug.Log("[ERROR] Invalid CONTROL " + name + "... TRY:");
 			foreach(string key in controls.Keys)
 			{
 				Debug.Log("      " + key);
