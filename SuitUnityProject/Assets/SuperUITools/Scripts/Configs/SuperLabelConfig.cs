@@ -65,6 +65,13 @@ public class SuperLabelConfig : MonoBehaviour
             return;
         }
 
+        bool is_paragraph = false;
+        if(label_type == "paragraph")
+        {
+            Debug.Log("GOT PARAGRAPH TEXT: " + name);
+            is_paragraph = true;
+        }
+
         GameObject game_object = maybe_recycled_node;
         SuperLabel label = null;
         Text ui_text = null;
@@ -84,8 +91,13 @@ public class SuperLabelConfig : MonoBehaviour
         label.name = name;
         label.hierarchyDescription = "LABEL";
         
-
-        ui_text.horizontalOverflow = HorizontalWrapMode.Overflow;
+        if(is_paragraph)
+        {
+            ui_text.horizontalOverflow = HorizontalWrapMode.Wrap;
+        }else{
+            ui_text.horizontalOverflow = HorizontalWrapMode.Overflow;
+        }
+        ui_text.verticalOverflow = VerticalWrapMode.Overflow;
 
         string font = (string)node["font"];
         if(SuperLabelConfig.GetFont(font) != null)
@@ -94,6 +106,9 @@ public class SuperLabelConfig : MonoBehaviour
         }else{
             Debug.Log("[WARNING] SuperLabelConfig not able to find " + font + " -- falling back to Arial");
         }
+
+        //by default text shouldn't gobble clicks -- we typically embed text in other controls
+        ui_text.raycastTarget = false;
 
         string text = (string)node["text"];
         ui_text.text = text;
@@ -111,12 +126,30 @@ public class SuperLabelConfig : MonoBehaviour
             string alignment = (string)node["justification"];
             if(alignment == "center")
             {
-                ui_text.alignment = TextAnchor.MiddleCenter;
+                if(is_paragraph)
+                {
+                    ui_text.alignment = TextAnchor.UpperCenter;    
+                }else{
+                    ui_text.alignment = TextAnchor.MiddleCenter;
+                }
+                
             }else if(alignment == "left"){
-                ui_text.alignment = TextAnchor.MiddleLeft;
+                if(is_paragraph)
+                {
+                    ui_text.alignment = TextAnchor.UpperLeft;    
+                }else{
+                    ui_text.alignment = TextAnchor.MiddleLeft;
+                }
+                
                 rect_transform.pivot = new Vector2(0f , 0.5f);
             }else if(alignment == "right"){
-                ui_text.alignment = TextAnchor.MiddleRight;
+                if(is_paragraph)
+                {
+                    ui_text.alignment = TextAnchor.MiddleRight;    
+                }else{
+                    ui_text.alignment = TextAnchor.UpperRight;
+                }
+                
                 rect_transform.pivot = new Vector2(1f , 0.5f);
             }
 
