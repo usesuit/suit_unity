@@ -25,10 +25,18 @@ public class SuperNode : MonoBehaviour
 	{
 		get
 		{
+			if(rectTransform == null)
+			{
+				rectTransform = GetComponent<RectTransform>();
+			}
 			return rectTransform.localPosition.x;	
 		}
 		set
 		{
+			if(rectTransform == null)
+			{
+				rectTransform = GetComponent<RectTransform>();
+			}
 			rectTransform.localPosition = new Vector3(value, rectTransform.localPosition.y, rectTransform.localPosition.z);
 		}
 	}
@@ -37,10 +45,18 @@ public class SuperNode : MonoBehaviour
 	{
 		get
 		{
+			if(rectTransform == null)
+			{
+				rectTransform = GetComponent<RectTransform>();
+			}
 			return rectTransform.localPosition.y;	
 		}
 		set
 		{
+			if(rectTransform == null)
+			{
+				rectTransform = GetComponent<RectTransform>();
+			}
 			rectTransform.localPosition = new Vector3(rectTransform.localPosition.x, value, rectTransform.localPosition.z);
 		}
 	}
@@ -49,10 +65,18 @@ public class SuperNode : MonoBehaviour
 	{
 		get
 		{
+			if(rectTransform == null)
+			{
+				rectTransform = GetComponent<RectTransform>();
+			}
 			return rectTransform.sizeDelta.x;
 		}
 		set
 		{
+			if(rectTransform == null)
+			{
+				rectTransform = GetComponent<RectTransform>();
+			}
 			rectTransform.sizeDelta = new Vector2(value, height);
 		}
 	}
@@ -61,10 +85,18 @@ public class SuperNode : MonoBehaviour
 	{
 		get
 		{
+			if(rectTransform == null)
+			{
+				rectTransform = GetComponent<RectTransform>();
+			}
 			return rectTransform.sizeDelta.y;	
 		}
 		set
 		{
+			if(rectTransform == null)
+			{
+				rectTransform = GetComponent<RectTransform>();
+			}
 			rectTransform.sizeDelta = new Vector2(width, value);
 		}
 	}
@@ -90,6 +122,28 @@ public class SuperNode : MonoBehaviour
 			rectTransform.anchoredPosition = new Vector2(resetX, resetY);
 			rectTransform.localPosition = new Vector3(rectTransform.localPosition.x, rectTransform.localPosition.y, 0f);
 		}
+	}
+
+	//helper for: "put this object as a child of mine and match its rect transform to mine"
+	virtual public void Place(GameObject game_object)
+	{
+		if(rectTransform == null)
+		{
+			rectTransform = GetComponent<RectTransform>();
+		}
+			
+		game_object.transform.SetParent(transform);
+		RectTransform rect = game_object.GetComponent<RectTransform>();
+		rect.anchoredPosition = Vector2.zero;
+		rect.anchoredPosition3D = Vector3.zero;
+		rect.anchorMax = rectTransform.anchorMax;
+		rect.anchorMin = rectTransform.anchorMin;
+		rect.offsetMax = rectTransform.offsetMax;
+		rect.offsetMin = rectTransform.offsetMin;
+		rect.pivot = rectTransform.pivot;
+		rect.sizeDelta = rectTransform.sizeDelta;
+
+		rect.localPosition = Vector3.zero;
 	}
 
 	//even if we've been added to our game object, it seems like it takes a frame
