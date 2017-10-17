@@ -18,7 +18,7 @@ public class SuperTab : SuperContainerBase
 	public event SuperTabDelegate stateWillChange;
 	public event SuperTabDelegate stateDidChange;
 
-	private HashSet<string> states;
+	public HashSet<string> states;
 	public List<string> cycle;
 
 	private HashSet<GameObject> allLinkedNodes;
@@ -39,18 +39,21 @@ public class SuperTab : SuperContainerBase
 			}
 			_currentState = value;
 
-			foreach(GameObject hide_me in allLinkedNodes)
+			if(allLinkedNodes != null)
 			{
-				hide_me.SetActive(false);
-			}
-
-			if(linkedNodes.ContainsKey(value))
-			{
-				foreach(GameObject show_me in linkedNodes[value])
+				foreach(GameObject hide_me in allLinkedNodes)
 				{
-					show_me.SetActive(true);
+					hide_me.SetActive(false);
+				}	
+
+				if(linkedNodes.ContainsKey(value))
+				{
+					foreach(GameObject show_me in linkedNodes[value])
+					{
+						show_me.SetActive(true);
+					}
 				}
-			}
+			}			
 
 			foreach(Transform child_transform in transform)
 			{
@@ -144,7 +147,7 @@ public class SuperTab : SuperContainerBase
 	}
 
 
-	void Start()
+	void Awake()
 	{
 		CreateStates();
 	}
