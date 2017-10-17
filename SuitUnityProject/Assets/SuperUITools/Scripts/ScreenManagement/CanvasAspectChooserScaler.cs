@@ -23,12 +23,6 @@ public class UIAspectRatio
     }
 }
 
-[Serializable]
-public class SuitAspectChangeEvent : UnityEvent<string,string>{}
- 
- 
-
-
 public delegate void OnAspectChange(string old_aspect, string new_aspect);
 
 public class CanvasAspectChooserScaler : MonoBehaviour {
@@ -42,7 +36,7 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 
 	private CanvasScaler scaler;
 
-	public SuitAspectChangeEvent onChange;
+	public static OnAspectChange onChange;
 
 	void Start()
 	{
@@ -58,7 +52,6 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 			cameraWidth = Camera.main.pixelWidth;
 			cameraHeight = Camera.main.pixelHeight;
 
-			Debug.Log("SET ASPECT: " + Camera.main.aspect);
 			UpdateAspectRatio();
 		}
 	}
@@ -122,7 +115,10 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 
 		if(old_name != "" && old_name != new_name)
 		{
-			onChange.Invoke(old_name, new_name);	
+			if(onChange != null)
+			{
+				onChange(old_name, new_name);
+			}
 		}
 		
 
