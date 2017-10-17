@@ -72,7 +72,12 @@ public class SuperButton : SuperButtonBase
         Button uibutton = GetComponent<Button>();
 
         Transform child;
+
+        //we don't require anything but an up state
         bool has_highlight = false;
+        bool has_down = false;
+        bool has_disabled = false;
+
         for(var i = 0; i < gameObject.transform.childCount; i++)
         {
             child = gameObject.transform.GetChild(i);
@@ -95,6 +100,7 @@ public class SuperButton : SuperButtonBase
             }else if(tag == "down"){
                 pressedStateGO.transform.SetSiblingIndex(i);
                 child.SetParent(pressedStateGO.transform);
+                has_down = true;
                 i--;
             }else if(tag == "over"){
                 highlightedStateGO.transform.SetSiblingIndex(i);
@@ -104,6 +110,7 @@ public class SuperButton : SuperButtonBase
             }else if(tag == "disabled"){
                 disabledStateGO.transform.SetSiblingIndex(i);
                 child.SetParent(disabledStateGO.transform);
+                has_disabled = true;
                 i--;
             }
         }
@@ -114,6 +121,14 @@ public class SuperButton : SuperButtonBase
         if(!has_highlight)
         {
             uibutton.animationTriggers.highlightedTrigger = uibutton.animationTriggers.normalTrigger;
+        }
+        if(!has_disabled)
+        {
+            uibutton.animationTriggers.disabledTrigger = uibutton.animationTriggers.normalTrigger;
+        }
+        if(!has_down)
+        {
+            uibutton.animationTriggers.pressedTrigger = uibutton.animationTriggers.normalTrigger;
         }
     }
 
