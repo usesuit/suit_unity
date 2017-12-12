@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditor.Events;
+#endif
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -28,6 +30,7 @@ public class SuperScaleButton : SuperButtonBase
     //  but if we're just an image... let's fake being an image inside a container
 	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node, GameObject maybe_recycled_node)
     {
+        #if UNITY_EDITOR
         string node_type = (string)node["type"];
         string name = (string)node["name"];
 
@@ -87,10 +90,12 @@ public class SuperScaleButton : SuperButtonBase
         {
             root_node.ProcessChildren(game_object.transform, node["children"] as List<object>);
         }
+        #endif
     }
 
     public void createAnimation()
     {
+        #if UNITY_EDITOR
         Button uibutton = gameObject.AddComponent(typeof(Button)) as Button;
         Animator animator = gameObject.AddComponent(typeof(Animator)) as Animator;
 
@@ -120,5 +125,6 @@ public class SuperScaleButton : SuperButtonBase
         MethodInfo method_info = UnityEventBase.GetValidMethodInfo(this, "HandleClick", new Type[]{});
         UnityAction method_delegate = System.Delegate.CreateDelegate(typeof(UnityAction), this, method_info) as UnityAction;
         UnityEventTools.AddPersistentListener(uibutton.onClick, method_delegate);
+        #endif
     }
 }

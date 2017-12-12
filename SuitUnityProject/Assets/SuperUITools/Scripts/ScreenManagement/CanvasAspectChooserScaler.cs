@@ -24,6 +24,7 @@ public class UIAspectRatio
 }
 
 public delegate void OnAspectChange(string old_aspect, string new_aspect);
+public delegate void OnScaleChange(float old_scale, float new_scale);
 
 public class CanvasAspectChooserScaler : MonoBehaviour {
 
@@ -37,10 +38,12 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 	private CanvasScaler scaler;
 
 	public static OnAspectChange onChange;
+	public static OnScaleChange onScale;
 
 	void Start()
 	{
 		scaler = GetComponent<CanvasScaler>();
+		ForceUpdate();
 	}
 
 	// Update is called once per frame
@@ -48,19 +51,24 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 	{
 		if(Camera.main.aspect != lastAspect || Camera.main.pixelWidth != cameraWidth)
 		{
-			lastAspect = Camera.main.aspect;
-			cameraWidth = Camera.main.pixelWidth;
-			cameraHeight = Camera.main.pixelHeight;
-
-			UpdateAspectRatio();
+			ForceUpdate();
 		}
+	}
+
+	public void ForceUpdate()
+	{
+		lastAspect = Camera.main.aspect;
+		cameraWidth = Camera.main.pixelWidth;
+		cameraHeight = Camera.main.pixelHeight;
+
+		UpdateAspectRatio();
 	}
 
 	void UpdateAspectRatio()
 	{
 		if(aspectRatios.Length == 0)
 		{
-			Debug.Log("NO ASPECT RATIOS TO CHOOSE FROM");
+			Debug.Log("NO ASPECT RATIOS TO CHOOSE FROM", gameObject);
 			return;
 		}
 
@@ -120,17 +128,24 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 				onChange(old_name, new_name);
 			}
 		}
-		
 
 		float width_ratio = cameraWidth / currentAspectRatio.width;
 		float height_ratio = cameraHeight / currentAspectRatio.height;
 
-		if(Mathf.Abs(height_ratio - 1) > Mathf.Abs(width_ratio - 1))
+		if(height_ratio < width_ratio)
 		{
 			//FIT HEIGHT
+			if(onScale != null)
+			{
+				onScale(scaler.scaleFactor, height_ratio);
+			}
 			scaler.scaleFactor = height_ratio;
 		}else{
 			//FIT WIDTH
+			if(onScale != null)
+			{
+				onScale(scaler.scaleFactor, width_ratio);
+			}
 			scaler.scaleFactor = width_ratio;
 		}
 

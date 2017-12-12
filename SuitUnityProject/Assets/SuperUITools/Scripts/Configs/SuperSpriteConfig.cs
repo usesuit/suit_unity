@@ -2,7 +2,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 
+#if UNITY_EDITOR
 using UnityEditor;
+#endif
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -51,6 +53,7 @@ public class SuperSpriteConfig : MonoBehaviour
 
     public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node, GameObject maybe_recycled_node)
     {
+        #if UNITY_EDITOR
         string image_name = (string)node["name"];
         string image_type = image_name.Split('_')[0];
 
@@ -96,6 +99,7 @@ public class SuperSpriteConfig : MonoBehaviour
         root_node.spriteReferences.Add(new SpriteReference(image_name, sprite));
         game_object.transform.SetParent(parent);
         sprite.Reset();
+        #endif
     }
 
     public static void RefreshClasses()

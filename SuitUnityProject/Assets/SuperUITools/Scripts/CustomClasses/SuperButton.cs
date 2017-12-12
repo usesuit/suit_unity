@@ -3,9 +3,11 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
+#if UNITY_EDITOR
 using UnityEditor;
 using UnityEditor.Animations;
 using UnityEditor.Events;
+#endif
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -134,6 +136,7 @@ public class SuperButton : SuperButtonBase
 
     public void createAnimation()
     {
+        #if UNITY_EDITOR
         //A Button can have 4 states: Normal, Highlighted, Pressed, Disabled
         //A Button can also have extra junk that is just always there
         upStateGO = new GameObject();
@@ -180,5 +183,6 @@ public class SuperButton : SuperButtonBase
         MethodInfo method_info = UnityEventBase.GetValidMethodInfo(this, "HandleClick", new Type[]{});
         UnityAction method_delegate = System.Delegate.CreateDelegate(typeof(UnityAction), this, method_info) as UnityAction;
         UnityEventTools.AddPersistentListener(uibutton.onClick, method_delegate);
+        #endif
     }
 }

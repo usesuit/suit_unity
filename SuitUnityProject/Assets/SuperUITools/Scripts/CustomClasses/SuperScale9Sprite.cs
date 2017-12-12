@@ -9,9 +9,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
+#if UNITY_EDITOR
 using UnityEditor;
-using UnityEditor.Animations;
-using UnityEditor.Events;
+#endif
 
 using UnityEngine;
 using UnityEngine.Events;
@@ -35,6 +35,7 @@ public class SuperScale9Sprite : SuperSprite
     //the only way to get here is through the Container/Label/Sprite configs passing it through
 	public static void ProcessNode(SuperMetaNode root_node, Transform parent, Dictionary<string,object> node, GameObject maybe_recycled_node)
     {
+    	#if UNITY_EDITOR
         string name = (string)node["name"];
 
         GameObject game_object = maybe_recycled_node;
@@ -117,7 +118,7 @@ public class SuperScale9Sprite : SuperSprite
 		{
 			Debug.Log("[WARNING] sprite " + name + " has no border or doesn't match! This can't be automated...");
 			Debug.Log("... duplicating the sprite, which will split your sprite batching. To fix this...");
-			Debug.Log("... set the sprite's border to " + sprite.borderLBRT);
+			Debug.Log("... set the sprite's border LBRT to " + sprite.borderLBRT);
 			Rect rect = new Rect(0,0, original.texture.width, original.texture.height);
  			Sprite replacement= Sprite.Create(original.texture, rect, new Vector2(0.5f,0.5f), 100, 1, SpriteMeshType.FullRect, sprite.borderLBRT);
  			image.sprite = replacement;
@@ -137,6 +138,7 @@ public class SuperScale9Sprite : SuperSprite
         root_node.spriteReferences.Add(new SpriteReference(name, sprite));
         game_object.transform.SetParent(parent);
         sprite.Reset();
+        #endif
     }
 
     void CalculateBorder()

@@ -3,9 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-using UnityEditor;
-using UnityEditor.Sprites;
-
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.U2D;
@@ -14,7 +11,6 @@ public class SuperMetaNode : SuperContainer
 {
 
 	public TextAsset metadata;
-	public SpriteAtlas atlas;
 	
 	[HideInInspector]
 	public String rootContainer;
@@ -124,13 +120,9 @@ public class SuperMetaNode : SuperContainer
 
 		//not sure if rect makes sense here, as the goal would be to type .Get<Placeholder>()
 
-		//buttons also kind of break... intuitively I'd type .Get<SuperButton>() or .Get<ScaleButton>()
-		//but maybe just need to get used to typing .Get<SuperButtonBase>()
-		//this would be fixed by treating buttons as ordinary controls, BUT then we lose the ability 
-		//to iterate over all our buttons and add an easy catch-all button handler
 		if(typeof(T) == typeof(SuperButtonBase))
 		{
-			return (T)Convert.ChangeType(ButtonWithName(name), typeof(T));
+			Debug.Log("WARNING: DOES NOT WORK WITH BUTTONS");
 		}
 
 		//must be a control!
@@ -402,6 +394,12 @@ public class SuperMetaNode : SuperContainer
 				case "placeholder":
 					Rect placeholder = ProcessPlaceholderNode(node);
 					placeholderReferences.Add(new PlaceholderReference(name, placeholder));
+
+					if(name == "modal")
+					{
+						Debug.Log("ADD A MODAL TO " + parent.name);
+						parent.GetComponent<SuperContainer>().AddModal();
+					}
 					break;
 				default:
 					Debug.Log("UH OH -- INVALID NODE FOUND: " + node_type);

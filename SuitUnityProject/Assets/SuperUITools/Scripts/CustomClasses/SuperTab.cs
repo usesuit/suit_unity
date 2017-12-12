@@ -3,10 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
 
-using UnityEditor;
-using UnityEditor.Animations;
-using UnityEditor.Events;
-
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;

@@ -14,12 +14,19 @@ public delegate void OnButtonClick(SuperButtonBase button);
 public class SuperButtonBase : SuperContainerBase 
 {
 	public OnButtonClick onClick;
+	public static OnButtonClick globalClick;
 
     virtual public void HandleClick()
     {
     	if(onClick != null)
     	{
     		onClick(this);	
+    	}
+
+    	//useful for wiring up universal button sounds
+    	if(globalClick != null)
+    	{
+    		globalClick(this);
     	}
     }
 }
