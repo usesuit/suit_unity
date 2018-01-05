@@ -68,7 +68,6 @@ public class SuperLabelConfig : MonoBehaviour
         bool is_paragraph = false;
         if(label_type == "paragraph")
         {
-            Debug.Log("GOT PARAGRAPH TEXT: " + name);
             is_paragraph = true;
         }
 

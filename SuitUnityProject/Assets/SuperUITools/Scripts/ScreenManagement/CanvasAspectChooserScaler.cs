@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
-
+using UnityEngine.U2D;
 
 [System.Serializable]
 public class UIAspectRatio
@@ -26,7 +26,8 @@ public class UIAspectRatio
 public delegate void OnAspectChange(string old_aspect, string new_aspect);
 public delegate void OnScaleChange(float old_scale, float new_scale);
 
-public class CanvasAspectChooserScaler : MonoBehaviour {
+public class CanvasAspectChooserScaler : MonoBehaviour 
+{
 
 	public UIAspectRatio[] aspectRatios; 
 	public UIAspectRatio currentAspectRatio;
@@ -43,9 +44,9 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 	void Start()
 	{
 		scaler = GetComponent<CanvasScaler>();
-		ForceUpdate();
-	}
+	}	
 
+	
 	// Update is called once per frame
 	void Update() 
 	{
@@ -121,10 +122,11 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 
 		new_name = currentAspectRatio.name;
 
-		if(old_name != "" && old_name != new_name)
+		if(old_name != new_name)
 		{
 			if(onChange != null)
 			{
+				// Debug.Log("------------------------------------------------- ON CHANGE");
 				onChange(old_name, new_name);
 			}
 		}
@@ -136,7 +138,8 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 		{
 			//FIT HEIGHT
 			if(onScale != null)
-			{
+			{	
+				// Debug.Log("------------------------------------------------- ON SCALE");
 				onScale(scaler.scaleFactor, height_ratio);
 			}
 			scaler.scaleFactor = height_ratio;
@@ -144,6 +147,7 @@ public class CanvasAspectChooserScaler : MonoBehaviour {
 			//FIT WIDTH
 			if(onScale != null)
 			{
+				// Debug.Log("------------------------------------------------- ON SCALE");
 				onScale(scaler.scaleFactor, width_ratio);
 			}
 			scaler.scaleFactor = width_ratio;
